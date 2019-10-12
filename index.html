@@ -1,38 +1,139 @@
 <!doctype html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+    <title>reveal.js</title>
 
-		<link rel="stylesheet" href="css/reset.css">
-		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/black.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/solarized.css">
 
-		<!-- Theme used for syntax highlighting of code -->
-		<link rel="stylesheet" href="lib/css/monokai.css">
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="lib/css/monokai.css">
 
-		<!-- Printing and PDF exports -->
-		<script>
+    <!-- Printing and PDF exports -->
+    <script>
 			var link = document.createElement( 'link' );
 			link.rel = 'stylesheet';
 			link.type = 'text/css';
 			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
 			document.getElementsByTagName( 'head' )[0].appendChild( link );
-		</script>
-	</head>
-	<body>
-		<div class="reveal">
-			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
-			</div>
-		</div>
 
-		<script src="js/reveal.js"></script>
+    </script>
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section data-markdown>
+				    <textarea data-template>
+                      ## Analytics and ML  meets Functional Programming
+				    </textarea>
+        </section>
+		<section>
+			<h2>Why this talk ?</h2>
+			<ul>
+				<li>Why FP matters ? Why bother ?</li>
+				<li>Being pedant and talking about impurities. is that FP ?</li>
+				<li>How quickly slowly we achieve solving problems with FP in hand? </li>
+				<li>How can it actually benefit the timelines of a real world problem</li>
+			</ul>
+		</section>
+        <section>
+            <h3>A typical Data Engineering Workflow.</h3>
+            <ul>
+                <li>Billions of customer event records</li>
+                <li>Find out 1000s of attributes of each customer from their events</li>
+                <li>Likewise 1000s of features</li>
+                <li>All the way to datascience and ML pipelines.</li>
+                <li>Predict customer behavior</li>
+            </ul>
+        </section>
+        <section>
+            <h3>A typical Data Engineering Workflow.</h3>
+            <ul>
+                <li>Billions of customer event records</li>
+                <li>Find out 1000s of attributes of each customer from their events</li>
+                <li>Likewise 1000s of features</li>
+                <li>All the way to datascience and ML pipelines.</li>
+                <li>Predict customer behavior</li>
+            </ul>
+        </section>
+        <section>
+            <h2>We have</h2>
+            <ul>
+                <li>Spark</li>
+                <li>Flink</li>
+                <li>Scio</li>
+                <li>Beam</li>
+                <li>And so on..</li>
+            </ul>
+        </section>
+		<section>
+			This talk is going to be sharing a real life experience
+			of actually solving this problem to a signifiant extent in 2.5 months of time - 1 resource.
+		</section>
+        <section>
+            <h2>Let's formalise our challenges.</h2>
+        </section>
+        <section>
+            <h3>Challenges.</h3>
+            <ul>
+                <li>We have dozen of event types - not just 1 event.</li>
+                <li>There are 1000s of features from each of these events.</li>
+                <li>Add new features.</li>
+                <li>Change in existing features.</li>
+            </ul>
+        </section>
+        <section>
+            <h3>Challenges continued..</h3>
+            <ul>
+                <li>Obvious performance considerations</li>
+                <li>Scalable number of features</li>
+                <li>Constantly increasing time period</li>
+                <li>Reducing redundancy</li>
+                <li>Windowing</li>
+                <li>IO</li>
+            </ul>
+        </section>
+        <section>
+            <h3>And Challenges continued..</h3>
+            <ul>
+                <li>Opt</li>
+                <li>Scalable number of features</li>
+                <li>Reducing redundancy</li>
+                <li>Windowing</li>
+                <li>IO</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Too late on:</h2>
+            <ul>
+                <li> Performance</li>
+                <li> Correctness</li>
+                <li> How can we add new features and functionalities quickly</li>
+                <li> Or here</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Abstract away.</h2>
+            <pre><code class="hljs scala" data-trim>
+						sealed trait FeatureEngineeringWorkflow[D, C, A]
 
-		<script>
+						object {
+						  case class ReadData[D]() extends FeatureEngineeringWorkflow[D]
+						}
+
+					    </code></pre>
+            <p>Trying out :) </p>
+        </section>
+    </div>
+</div>
+
+<script src="js/reveal.js"></script>
+
+<script>
 			// More info about config & dependencies:
 			// - https://github.com/hakimel/reveal.js#configuration
 			// - https://github.com/hakimel/reveal.js#dependencies
@@ -44,6 +145,7 @@
 					{ src: 'plugin/highlight/highlight.js', async: true }
 				]
 			});
-		</script>
-	</body>
+
+</script>
+</body>
 </html>
