@@ -77,11 +77,23 @@
         <section>
             <h2>Let's formalise our challenges.</h2>
         </section>
+		<section>
+			Ok, so let's write a query - well, a 1000 of them.
+			Let's parameterise the where condition so we could reuse some of the feature defintions.
+			We need to join them, hence we take each result and join.
+			Next time we have  feature, we either reuse the defintion or add a new one, and join with the rest.
+		</section>
+		<section>
+			QUERY
+			1. Start with a simple feature query.
+			2. Start with another one.
+		</section>
         <section>
             <h3>Challenges.</h3>
             <ul>
                 <li>We have dozen of event types - not just 1 event.</li>
                 <li>There are 1000s of features from each of these events.</li>
+				<li>Features are dependent to each other - either logically or for optimisations</li>
                 <li>Add new features.</li>
                 <li>Change in existing features.</li>
             </ul>
