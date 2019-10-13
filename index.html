@@ -21,6 +21,7 @@
 			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
 			document.getElementsByTagName( 'head' )[0].appendChild( link );
 
+
     </script>
 </head>
 <body>
@@ -31,23 +32,13 @@
                       ## Analytics and ML  meets Functional Programming
 				    </textarea>
         </section>
-		<section>
-			<h2>Why this talk ?</h2>
-			<ul>
-				<li>Why FP matters ? Why bother at all?</li>
-				<li>Being pedantic on impurities is FP ? </li>
-				<li>How quickly (or slowly) we can solve this problem with FP ? </li>
-				<li>How can it actually benefit the timelines of a real world problem</li>
-			</ul>
-		</section>
         <section>
-            <h3>A typical Data Engineering Workflow.</h3>
+            <h2>Why this talk ?</h2>
             <ul>
-                <li>Billions of customer event records</li>
-                <li>Find out 1000s of attributes of each customer from their events</li>
-                <li>Likewise 1000s of features</li>
-                <li>All the way to datascience and ML pipelines.</li>
-                <li>Predict customer behavior</li>
+                <li>Why FP matters ? Why bother at all?</li>
+                <li>Being pedantic on impurities is FP ?</li>
+                <li>How quickly (or slowly) we can solve this problem with FP ?</li>
+                <li>How can it actually benefit the timelines of a real world problem</li>
             </ul>
         </section>
         <section>
@@ -70,30 +61,95 @@
                 <li>And so on..</li>
             </ul>
         </section>
-		<section>
-			This talk is going to be sharing a real life experience
-			of actually solving this problem to a signifiant extent in 2.5 months of time - 1 resource.
-		</section>
+        <section>
+            This talk is going to be sharing a real life experience
+            of actually solving this problem to a signifiant extent in 2.5 months of time - 1 resource.
+        </section>
+        <section>
+            Ok, so let's write a query - well, a 1000 of them.
+            Let's parameterise the where condition so we could reuse some of the feature defintions.
+            We need to join them, hence we take each result and join.
+            Next time we have feature, we either reuse the defintion or add a new one, and join with the rest.
+        </section>
+        <section>
+            <h2>An example</h2>
+        </section>
+        <section>
+            <h2>An example</h2>
+            Find out the usage of chrome per customer in last 2 weeks.
+            <pre><code class="hljs sql" data-trim>
+                ...
+
+                select
+                  customer_id,
+                  sum(
+                    when("browser" == "safari") 1 else 0
+                  ) as "browser_safari_count_0-2w",
+                group by customer_id
+                where
+                  time < time_stamp() &&
+                  time >= minusDays(time_stamp(), 14)
+
+                ...
+					    </code></pre>
+
+        </section>
+        <section>
+            <h2> We need the count of Chrome as well </h2>
+            <pre><code class="hljs sql" data-trim>
+                ...
+
+                select
+                  customer_id,
+                  sum(
+                    when("browser" == "chrome") 1 else 0
+                  ) as "browser_chrome_count_0-2w",
+                group by customer_id
+                where
+                  time < time_stamp() &&
+                  time >= minusDays(time_stamp(), 14)
+
+                ...
+
+
+					    </code></pre>
+
+
+        </section>
+        <section>
+            <h3>Can't we squash them into a single query ?</h3>
+            <p>Let's assume we have a query engine that supports it.</p>
+            <pre><code class="hljs sql" data-trim>
+                ...
+
+                select
+                  customer_id,
+                  sum(
+                    when("browser" == "chrome") 1 else 0
+                  ) as "browser_chrome_count_0-2w",
+                  sum(
+                    when("browser" == "safari") 1 else 0
+                  ) as "browser_safari_count_0-2w",
+                group by customer_id
+                where
+                  time < time_stamp() &&
+                  time >= minusDays(time_stamp(), 14)
+
+                ...
+
+
+					    </code></pre>
+
+        </section>
         <section>
             <h2>Let's formalise our challenges.</h2>
         </section>
-		<section>
-			Ok, so let's write a query - well, a 1000 of them.
-			Let's parameterise the where condition so we could reuse some of the feature defintions.
-			We need to join them, hence we take each result and join.
-			Next time we have  feature, we either reuse the defintion or add a new one, and join with the rest.
-		</section>
-		<section>
-			QUERY
-			1. Start with a simple feature query.
-			2. Start with another one.
-		</section>
         <section>
             <h3>Challenges.</h3>
             <ul>
                 <li>We have dozen of event types - not just 1 event.</li>
                 <li>There are 1000s of features from each of these events.</li>
-				<li>Features are dependent to each other - either logically or for optimisations</li>
+                <li>Features are dependent to each other - either logically or for optimisations</li>
                 <li>Add new features.</li>
                 <li>Change in existing features.</li>
             </ul>
@@ -120,7 +176,7 @@
             </ul>
         </section>
         <section>
-            <h2>Too late on:</h2>
+            <h3>Too late on:</h3>
             <ul>
                 <li> Performance</li>
                 <li> Correctness</li>
@@ -150,6 +206,20 @@
 			// - https://github.com/hakimel/reveal.js#configuration
 			// - https://github.com/hakimel/reveal.js#dependencies
 			Reveal.initialize({
+				// ...
+
+	            // The "normal" size of the presentation, aspect ratio will be preserved
+	            // when the presentation is scaled to fit different resolutions. Can be
+	            // specified using percentage units.
+	            width: 960,
+	            height: 700,
+
+	            // Factor of the display size that should remain empty around the content
+	            margin: 0.1,
+
+	            // Bounds for smallest/largest possible scale to apply to content
+	            minScale: 0.2,
+	            maxScale: 1.5,
 				dependencies: [
 					{ src: 'plugin/markdown/marked.js' },
 					{ src: 'plugin/markdown/markdown.js' },
@@ -157,6 +227,7 @@
 					{ src: 'plugin/highlight/highlight.js', async: true }
 				]
 			});
+
 
 </script>
 </body>
