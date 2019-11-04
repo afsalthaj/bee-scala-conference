@@ -26,13 +26,28 @@
 <body>
 <div class="reveal">
     <div class="slides">
+        <!-- Heading section -->
         <section data-markdown>
-				    <textarea data-template>
-                      ## FP meets Real world
-				    </textarea>
+		  <textarea data-template>
+            ## FP meets Real world
+		  </textarea>
         </section>
 
+        <section class="fig-container"
+                 data-fig-id="fig-diagram1"
+                 data-file="diagram.html">
+        </section>
 
+        <!-- slide 1 -->
+
+        <section>
+            <div>
+                <img src="images/image1.jpg" height="700" width="9000">
+            </div>
+
+        </section>
+
+        <!-- Slide 2 -->
         <section>
             <h2>Why FP in Scala can make it hard ?</h2>
             <p>For an application code, should I be dealing with: </p>
@@ -47,6 +62,8 @@
         </section>
 
 
+        <!-- Slide 3 -->
+
         <section>
             <h2>Sticking on to fundamentals is the key</h2>
             <ul>
@@ -59,6 +76,7 @@
             <p> Result is, faster development of high quality solutions.</p>
         </section>
 
+        <!-- Slide 4 -->
 
         <section>
             <h2> Hence we have, and we need</h2>
@@ -73,6 +91,7 @@
             </ul>
         </section>
 
+        <!-- Slide 5 -->
 
         <section>
             <h2>So, before we deep dive</h2>
@@ -84,6 +103,8 @@
             <p>We use ZIO for a variety of reasons.</p>
         </section>
 
+
+        <!-- Slide 6 -->
 
         <section>
             <h2> The mental model of ZIO </h2>
@@ -109,6 +130,9 @@
             </code></pre>
             </div>
         </section>
+
+        <!-- Slide 7 -->
+
         <section>
                      <pre><code class="hljs scala">
                 ...
@@ -118,6 +142,10 @@
                 ...
             </code></pre>
         </section>
+
+        <!-- Slide 8 -->
+
+
         <section>
                         <pre><code class="hljs scala" style="font-size:19px">
                 ...
@@ -128,6 +156,9 @@ final case class CreateFeatures[D, Expr](input: FeatureDef[D, Expr]) extends Fea
             </code></pre>
         </section>
 
+
+        <!-- Slide 9 -->
+
         <section>
             <pre><code class="hljs scala">
 def findRequests(
@@ -135,6 +166,8 @@ def findRequests(
  ): List[SMap[Source[D], List[Logic[Expr]]]] = ???
             </code></pre>
         </section>
+
+        <!-- Slide 10 -->
 
         <section>
             <pre><code class="hljs scala" style="font-size:19px">
@@ -150,6 +183,9 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
 }
             </code></pre>
         </section>
+
+
+        <!-- Slide 11 - code0 -->
 
         <section data-transition="fade-out">
             <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="7,8,9" data-noescape>
@@ -174,6 +210,10 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
 
             </code></pre>
         </section>
+
+        <!-- Slide 12 - code0 -->
+
+
         <section data-transition="fade-in">
             <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="9,10" data-noescape>
 def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
@@ -196,6 +236,10 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
 }
       </code></pre>
         </section>
+
+
+        <!-- Slide 13 - code0 -->
+
 
         <section data-transition="fade-out">
             <pre><code class="hljs scala"  style="font-size:19px" data-trim data-line-numbers="11" data-noescape>
@@ -221,6 +265,9 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
             </code></pre>
         </section>
 
+        <!-- Slide 14 - code0 -->
+
+
         <section data-transition="fade-in">
             <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="12" data-noescape>
 def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
@@ -243,6 +290,9 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
 }
             </code></pre>
         </section>
+
+
+        <!-- Slide 15 - code0 -->
 
         <section data-transition="fade-out">
             <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="13" data-noescape>
@@ -267,6 +317,8 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
             </code></pre>
         </section>
 
+        <!-- Slide 16 - code0 -->
+
         <section data-transition="fade-in">
             <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="14" data-noescape>
 def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
@@ -289,40 +341,10 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
 }
             </code></pre>
         </section>
-        
-        <section>
-            <h3>A typical Data Engineering Workflow.</h3>
-            <ul>
-                <li>Billions of customer event records</li>
-                <li>Find out 1000s of attributes of each customer from their events</li>
-                <li>Likewise 1000s of features</li>
-                <li>All the way to datascience and ML pipelines.</li>
-                <li>Predict customer behavior</li>
-            </ul>
-        </section>
-        <section>
-            <h2>We have</h2>
-            <ul>
-                <li>Spark</li>
-                <li>Flink</li>
-                <li>Scio</li>
-                <li>Beam</li>
-                <li>And so on..</li>
-            </ul>
-        </section>
-        <section>
-            This talk is going to be sharing a real life experience
-            of actually solving this problem to a signifiant extent in 2.5 months of time - 1 resource.
-        </section>
-        <section>
-            Ok, so let's write a query - well, a 1000 of them.
-            Let's parameterise the where condition so we could reuse some of the feature defintions.
-            We need to join them, hence we take each result and join.
-            Next time we have feature, we either reuse the defintion or add a new one, and join with the rest.
-        </section>
-        <section>
-            <h2>An example</h2>
-        </section>
+
+
+        <!-- Slide 18 -->
+
         <section>
             <h2>An example</h2>
             Find out the usage of chrome per customer in last 2 weeks.
@@ -343,6 +365,9 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
            </code></pre>
 
         </section>
+
+        <!-- Slide 19 -->
+
         <section>
             <h2> We need the count of Chrome as well </h2>
             <pre><code class="hljs sql" data-trim>
@@ -365,6 +390,10 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
 
 
         </section>
+
+
+        <!-- Slide 20 -->
+
         <section>
             <h3>Can't we squash them into a single query ?</h3>
             <p>Let's assume we have a query engine that supports it.</p>
@@ -389,6 +418,9 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
 					    </code></pre>
 
         </section>
+
+        <!-- Slide 21 -->
+
         <section>
             <h2>Let's formalise our challenges.</h2>
         </section>
@@ -472,7 +504,9 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
 					{ src: 'plugin/markdown/marked.js' },
 					{ src: 'plugin/markdown/markdown.js' },
 					{ src: 'plugin/notes/notes.js', async: true },
-					{ src: 'plugin/highlight/highlight.js', async: true }
+					{ src: 'plugin/highlight/highlight.js', async: true },
+                    { src: 'https://d3js.org/d3.v4.min.js' },
+                    { src: 'plugin/d3js/d3js.js' }
 				]
 			});
 
