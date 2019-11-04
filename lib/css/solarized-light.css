@@ -1,0 +1,106 @@
+/*
+Orginal Style from ethanschoonover.com/solarized (c) Jeremy Hull <sourdrums@gmail.com>
+*/
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5em;
+  background: #fdf6e3;
+  color: #657b83;
+  -webkit-text-size-adjust: none;
+}
+
+.hljs-comment,
+.hljs-diff .header,
+.hljs-doctype,
+.hljs-pi,
+.hljs-lisp .string,
+.hljs-javadoc {
+  color: #93a1a1;
+}
+
+/* Solarized Green */
+.hljs-keyword,
+.hljs-winutils,
+.hljs-method,
+.hljs-addition,
+.hljs-css .tag,
+.hljs-request,
+.hljs-status,
+.hljs-nginx .title {
+  color: #859900;
+}
+
+/* Solarized Cyan */
+.hljs-number,
+.hljs-command,
+.hljs-string,
+.hljs-tag .value,
+.hljs-rules .value,
+.hljs-phpdoc,
+.hljs-dartdoc,
+.hljs-tex .formula,
+.hljs-regexp,
+.hljs-hexcolor,
+.hljs-link_url {
+  color: #2aa198;
+}
+
+/* Solarized Blue */
+pre .title,
+pre .localvars,
+pre .chunk,
+pre .decorator,
+pre .built_in,
+pre .identifier,
+pre .vhdl .literal,
+pre .id,
+pre .   css .function {
+  color: #268bd2;
+}
+
+/* Solarized Yellow */
+pre .attribute,
+pre .variable,
+pre .lisp .body,
+pre .smalltalk .number,
+pre .constant,
+pre .class .title,
+pre .parent,
+pre .type,
+pre .link_reference {
+  color: #b58900;
+}
+
+/* Solarized Orange */
+pre .preprocessor,
+pre .preprocessor .keyword,
+pre .pragma,
+pre .shebang,
+pre .symbol,
+pre .symbol .string,
+pre .diff .change,
+pre .special,
+pre .attr_selector,
+pre .subst,
+pre .cdata,
+pre .css .pseudo,
+pre .header {
+  color: #cb4b16;
+}
+
+/* Solarized Red */
+pre .deletion,
+pre .important {
+  color: #dc322f;
+}
+
+/* Solarized Violet */
+pre .link_label {
+  color: #6c71c4;
+}
+
+pre .tex .formula {
+  background: #eee8d5;
+}

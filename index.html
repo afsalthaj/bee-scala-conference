@@ -8,10 +8,11 @@
 
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/reveal.css">
-    <link rel="stylesheet" href="css/theme/solarized.css">
+    <link rel="stylesheet" href="css/theme/beige.css">
 
     <!-- Theme used for syntax highlighting of code -->
-    <link rel="stylesheet" href="lib/css/monokai.css">
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
 
     <!-- Printing and PDF exports -->
     <script>
@@ -20,8 +21,6 @@
 			link.type = 'text/css';
 			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
 			document.getElementsByTagName( 'head' )[0].appendChild( link );
-
-
     </script>
 </head>
 <body>
@@ -29,18 +28,268 @@
     <div class="slides">
         <section data-markdown>
 				    <textarea data-template>
-                      ## Analytics and ML  meets Functional Programming
+                      ## FP meets Real world
 				    </textarea>
         </section>
+
+
         <section>
-            <h2>Why this talk ?</h2>
+            <h2>Why FP in Scala can make it hard ?</h2>
+            <p>For an application code, should I be dealing with: </p>
+            <ul style="font-size:35px">
+                <li>Magical implicits.</li>
+                <li>Free structures with boiler-plates</li>
+                <li>Lifting error types everywhere - yes, type inference.</li>
+                <li>Typeclass specialisations.</li>
+                <li>Relatively complex code design and larger surface area</li>
+            </ul>
+            <p style="font-size:35px">Result is slower development of (incomplete) solutions</p>
+        </section>
+
+
+        <section>
+            <h2>Sticking on to fundamentals is the key</h2>
             <ul>
-                <li>Why FP matters ? Why bother at all?</li>
-                <li>Being pedantic on impurities is FP ?</li>
-                <li>How quickly (or slowly) we can solve this problem with FP ?</li>
-                <li>How can it actually benefit the timelines of a real world problem</li>
+                <li>Total functions</li>
+                <li>Programs as descriptions.</li>
+                <li>Referential transparency.</li>
+                <li>Type driven development.</li>
+                <li>Testability / Lawful / Less bugs</li>
+            </ul>
+            <p> Result is, faster development of high quality solutions.</p>
+        </section>
+
+
+        <section>
+            <h2> Hence we have, and we need</h2>
+            <ul>
+                <li>Quick addition of new capabilities</li>
+                <li>Resource safety</li>
+                <li>Optimisations</li>
+                <li>Performance</li>
+                <li>Testability / Separation of concerns</li>
+                <li>Intuitive error handling, and AOP style logging</li>
+                <li>All of them should compose ...</li>
             </ul>
         </section>
+
+
+        <section>
+            <h2>So, before we deep dive</h2>
+            <ul>
+                <li>Effects: ZIO</li>
+                <li>Semigroup</li>
+                <li>Natural Transformation: The impl of abstraction into ZIO</li>
+            </ul>
+            <p>We use ZIO for a variety of reasons.</p>
+        </section>
+
+
+        <section>
+            <h2> The mental model of ZIO </h2>
+            <div>
+            <pre><code class="hljs scala" data-trim>
+                ...
+
+                  ZIO[R, E, A]
+                  // ZIO[Environment, Error, Result]
+                ...
+           </code></pre>
+
+            </div>
+            <div>
+            <pre><code class="hljs scala" data-trim>
+                ...
+
+                  R => Either[E, A]
+
+                  // Given an input R,
+                  // the computation either returns an Error or a result A.
+                ...
+            </code></pre>
+            </div>
+        </section>
+        <section>
+                     <pre><code class="hljs scala">
+                ...
+
+                  sealed trait FeatureGen[D, Expr, A]
+
+                ...
+            </code></pre>
+        </section>
+        <section>
+                        <pre><code class="hljs scala" style="font-size:19px">
+                ...
+
+final case class CreateFeatures[D, Expr](input: FeatureDef[D, Expr]) extends FeatureGen[D, Expr, FeatureRes[D]]
+              ...
+
+            </code></pre>
+        </section>
+
+        <section>
+            <pre><code class="hljs scala">
+def findRequests(
+  x: FeatureGen[D, Expr, B]
+ ): List[SMap[Source[D], List[Logic[Expr]]]] = ???
+            </code></pre>
+        </section>
+
+        <section>
+            <pre><code class="hljs scala" style="font-size:19px">
+def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
+    fa match {
+      case CreateFeatures(featureDef) => ???
+      case JoinFeatures(f1, f2) => ???
+      case Pure(_)              => ???
+      case Map(f1, _)           => ???
+      case Zip(f1, f2)          => ???
+      case Fail(_)              => ???
+    }
+}
+            </code></pre>
+        </section>
+
+        <section data-transition="fade-out">
+            <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="7,8,9" data-noescape>
+def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
+  def loop[B](
+     value: FeatureGen[D, Expr, B],
+     acc: List[SMap[Source[D], List[Logic[Expr]]]]
+   ): List[SMap[Source[D], List[Logic[Expr]]]] =
+    value match {
+      case CreateFeatures(featureDef) =>
+        Map(Source(featureDef.input, featureDef.forPartition) -> featureDef.featuresLogic) :: acc
+
+      case JoinFeatures(f1, f2) => (loop(f1, list) |@| loop(f2, list))(_ |+| _)
+      case Pure(_)              => acc
+      case Map(f1, _)           => loop(f1, acc)
+      case Zip(f1, f2)          => loop(f1, acc) ++ loop(f2, acc)
+      case Fail(_)              => acc
+    }
+
+  loop(fa, List.empty[SMap[Source[D], List[Logic[Expr]]]])
+}
+
+            </code></pre>
+        </section>
+        <section data-transition="fade-in">
+            <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="9,10" data-noescape>
+def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
+  def loop[B](
+     value: FeatureGen[D, Expr, B],
+     acc: List[SMap[Source[D], List[Logic[Expr]]]]
+   ): List[SMap[Source[D], List[Logic[Expr]]]] =
+    value match {
+      case CreateFeatures(featureDef) =>
+        Map(Source(featureDef.input, featureDef.forPartition) -> featureDef.featuresLogic) :: acc
+
+      case JoinFeatures(f1, f2) => (loop(f1, list) |@| loop(f2, list))(_ |+| _)
+      case Pure(_)              => acc
+      case Map(f1, _)           => loop(f1, acc)
+      case Zip(f1, f2)          => loop(f1, acc) ++ loop(f2, acc)
+      case Fail(_)              => acc
+    }
+
+  loop(fa, List.empty[SMap[Source[D], List[Logic[Expr]]]])
+}
+      </code></pre>
+        </section>
+
+        <section data-transition="fade-out">
+            <pre><code class="hljs scala"  style="font-size:19px" data-trim data-line-numbers="11" data-noescape>
+def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
+  def loop[B](
+     value: FeatureGen[D, Expr, B],
+     acc: List[SMap[Source[D], List[Logic[Expr]]]]
+   ): List[SMap[Source[D], List[Logic[Expr]]]] =
+    value match {
+      case CreateFeatures(featureDef) =>
+        Map(Source(featureDef.input, featureDef.forPartition) -> featureDef.featuresLogic) :: acc
+
+      case JoinFeatures(f1, f2) => (loop(f1, list) |@| loop(f2, list))(_ |+| _)
+      case Pure(_)              => acc
+      case Map(f1, _)           => loop(f1, acc)
+      case Zip(f1, f2)          => loop(f1, acc) ++ loop(f2, acc)
+      case Fail(_)              => acc
+    }
+
+  loop(fa, List.empty[SMap[Source[D], List[Logic[Expr]]]])
+}
+
+            </code></pre>
+        </section>
+
+        <section data-transition="fade-in">
+            <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="12" data-noescape>
+def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
+  def loop[B](
+     value: FeatureGen[D, Expr, B],
+     acc: List[SMap[Source[D], List[Logic[Expr]]]]
+   ): List[SMap[Source[D], List[Logic[Expr]]]] =
+    value match {
+      case CreateFeatures(featureDef) =>
+        Map(Source(featureDef.input, featureDef.forPartition) -> featureDef.featuresLogic) :: acc
+
+      case JoinFeatures(f1, f2) => (loop(f1, list) |@| loop(f2, list))(_ |+| _)
+      case Pure(_)              => acc
+      case Map(f1, _)           => loop(f1, acc)
+      case Zip(f1, f2)          => loop(f1, acc) ++ loop(f2, acc)
+      case Fail(_)              => acc
+    }
+
+  loop(fa, List.empty[SMap[Source[D], List[Logic[Expr]]]])
+}
+            </code></pre>
+        </section>
+
+        <section data-transition="fade-out">
+            <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="13" data-noescape>
+def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
+  def loop[B](
+     value: FeatureGen[D, Expr, B],
+     acc: List[SMap[Source[D], List[Logic[Expr]]]]
+   ): List[SMap[Source[D], List[Logic[Expr]]]] =
+    value match {
+      case CreateFeatures(featureDef) =>
+        Map(Source(featureDef.input, featureDef.forPartition) -> featureDef.featuresLogic) :: acc
+
+      case JoinFeatures(f1, f2) => (loop(f1, list) |@| loop(f2, list))(_ |+| _)
+      case Pure(_)              => acc
+      case Map(f1, _)           => loop(f1, acc)
+      case Zip(f1, f2)          => loop(f1, acc) ++ loop(f2, acc)
+      case Fail(_)              => acc
+    }
+
+  loop(fa, List.empty[SMap[Source[D], List[Logic[Expr]]]])
+}
+            </code></pre>
+        </section>
+
+        <section data-transition="fade-in">
+            <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="14" data-noescape>
+def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
+  def loop[B](
+     value: FeatureGen[D, Expr, B],
+     acc: List[SMap[Source[D], List[Logic[Expr]]]]
+   ): List[SMap[Source[D], List[Logic[Expr]]]] =
+    value match {
+      case CreateFeatures(featureDef) =>
+        Map(Source(featureDef.input, featureDef.forPartition) -> featureDef.featuresLogic) :: acc
+
+      case JoinFeatures(f1, f2) => (loop(f1, list) |@| loop(f2, list))(_ |+| _)
+      case Pure(_)              => acc
+      case Map(f1, _)           => loop(f1, acc)
+      case Zip(f1, f2)          => loop(f1, acc) ++ loop(f2, acc)
+      case Fail(_)              => acc
+    }
+
+  loop(fa, List.empty[SMap[Source[D], List[Logic[Expr]]]])
+}
+            </code></pre>
+        </section>
+        
         <section>
             <h3>A typical Data Engineering Workflow.</h3>
             <ul>
@@ -91,7 +340,7 @@
                   time >= minusDays(time_stamp(), 14)
 
                 ...
-					    </code></pre>
+           </code></pre>
 
         </section>
         <section>
@@ -136,7 +385,6 @@
                   time >= minusDays(time_stamp(), 14)
 
                 ...
-
 
 					    </code></pre>
 
@@ -211,8 +459,8 @@
 	            // The "normal" size of the presentation, aspect ratio will be preserved
 	            // when the presentation is scaled to fit different resolutions. Can be
 	            // specified using percentage units.
-	            width: 960,
-	            height: 700,
+	            width: 1300,
+	            height: 750,
 
 	            // Factor of the display size that should remain empty around the content
 	            margin: 0.1,
@@ -227,6 +475,10 @@
 					{ src: 'plugin/highlight/highlight.js', async: true }
 				]
 			});
+
+
+
+
 
 
 </script>
