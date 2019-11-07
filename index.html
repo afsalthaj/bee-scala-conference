@@ -1,5 +1,6 @@
 <!doctype html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -16,210 +17,311 @@
 
   <!-- Printing and PDF exports -->
   <script>
-			var link = document.createElement( 'link' );
-			link.rel = 'stylesheet';
-			link.type = 'text/css';
-			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
-			document.getElementsByTagName( 'head' )[0].appendChild( link );
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+    document.getElementsByTagName('head')[0].appendChild(link);
 
   </script>
 </head>
+
 <body>
-<div class="reveal">
-  <div class="slides">
-    <!-- Heading section -->
-    <section data-markdown>
-		  <textarea data-template>
+  <div class="reveal">
+    <div class="slides">
+      <!-- Heading section -->
+      <section data-markdown>
+        <textarea data-template>
             ## FP meets Real world
-		  </textarea>
-    </section>
-
-    <section class="fig-container"
-             data-fig-id="fig-diagram1"
-             data-file="diagram.html">
-    </section>
-
-    <!-- slide 1 -->
-
-    <section>
-      <div>
-        <img src="images/image1.jpg" height="700" width="9000">
-      </div>
-
-    </section>
-
-    <!-- Slide 2 -->
-    <section>
-      <h2>Why FP in Scala can make it hard ?</h2>
-      <p>For an application code, should I be dealing with: </p>
-      <ul style="font-size:35px">
-        <li>Magical implicits.</li>
-        <li>Free structures with boiler-plates</li>
-        <li>Lifting error types everywhere - yes, type inference.</li>
-        <li>Typeclass specialisations.</li>
-        <li>Relatively complex code design and larger surface area</li>
-      </ul>
-      <p style="font-size:35px">Result is slower development of (incomplete) solutions</p>
-    </section>
-
-
-    <!-- Slide 3 -->
-
-    <section>
-      <h2>Sticking on to fundamentals is the key</h2>
-      <ul>
-        <li>Total functions</li>
-        <li>Programs as descriptions.</li>
-        <li>Referential transparency.</li>
-        <li>Type driven development.</li>
-        <li>Testability / Lawful / Less bugs</li>
-      </ul>
-      <p> Result is, faster development of high quality solutions.</p>
-    </section>
-
-    <!-- Slide 4 -->
-
-    <section>
-      <h2> Hence we have, and we need</h2>
-      <ul>
-        <li>Quick addition of new capabilities</li>
-        <li>Resource safety</li>
-        <li>Optimisations</li>
-        <li>Performance</li>
-        <li>Testability / Separation of concerns</li>
-        <li>Intuitive error handling, and AOP style logging</li>
-        <li>All of them should compose ...</li>
-      </ul>
-    </section>
-
-    <!-- Slide -->
-
-    <section>
-      <h3 class ="fragment grow">Let us write FP for a Bigdata problem </h3>
-      <h6 class="fragment">Handling REAL WORLD requirements. </h6>
-      <h6 class="fragment">And finish off development fairly quickly - we have say 3 months</h6>
-      <br>
-    </section>
-
-    <!-- Slide -->
-
-    <section>
-      <section id="fragments">
-        <h2>The problem statement</h2>
-        <h6>We have billions of events of customers clicking your netbank app.</h6>
-        <p class="fragment" align="left" style="font-size:30px"> We keep finding various attributes of customers - Ex: total transactions in last 3 weeks </p>
-        <p class="fragment" align="left" style="font-size:30px"> We need to quickly add new business logic - new attributes/features </p>
-        <p class="fragment" align="left" style="font-size:30px"> That is a thin layer of interface to declaratively define clear and concise business logic - uncluttered with performance related details </p>
-        <p class="fragment" align="left" style="font-size:30px"> We may group them (compose) the list of logic in anyway - may be feed them to different ML algorithms </p>
-        <p class="fragment" align="left" style="font-size:30px"> It's a batch job - we don't need realtime ML training. </p>
+	      </textarea>
       </section>
+
+      <!-- Slide 2 -->
       <section>
-        <h2>They are not after-thoughts</h2>
+        <h2>Why FP in Scala can make it hard ?</h2>
+        <p>For an application code, should I be dealing with: </p>
+        <ul style="font-size:35px">
+          <li>Magical implicits.</li>
+          <li>Free structures with boiler-plates</li>
+          <li>Lifting error types everywhere - yes, type inference.</li>
+          <li>Typeclass specialisations.</li>
+          <li>Relatively complex code design and larger surface area</li>
+        </ul>
+        <p style="font-size:35px">Result is slower development of (incomplete) solutions</p>
+      </section>
+
+
+      <!-- Slide 3 -->
+
+      <section>
+        <h2>Sticking on to fundamentals is the key</h2>
         <ul>
-          <li class="fragment" style="font-size:30px">We should be able to introspect for quick performance hiccups due to declarative interface.</li>
-          <li class="fragment" style="font-size:30px">Error channels - bring them straight away into the code</li>
-          <li class="fragment" style="font-size:30px">Business level DSL</li>
-          <li class="fragment" style="font-size:30px">Quick fixes of imperative systems</li>
-          <li class="fragment" style="font-size:30px">Backend agnostic - atleast to some extent</li>
-          <li class="fragment" style="font-size:30px">Testability</li>
-          <li class="fragment" style="font-size:30px">Should be relatively quick, we don't have much time.</li>
+          <li>Total functions</li>
+          <li>Programs as descriptions.</li>
+          <li>Referential transparency.</li>
+          <li>Type driven development.</li>
+          <li>Testability / Lawful / Less bugs</li>
+        </ul>
+        <p> Result is, faster development of high quality solutions.</p>
+      </section>
+
+      <!-- Slide 4 -->
+
+      <section>
+        <h2> Hence we have, and we need</h2>
+        <ul>
+          <li>Quick addition of new capabilities</li>
+          <li>Resource safety</li>
+          <li>Optimisations</li>
+          <li>Performance</li>
+          <li>Testability / Separation of concerns</li>
+          <li>Intuitive error handling, and AOP style logging</li>
+          <li>All of them should compose ...</li>
         </ul>
       </section>
-    </section>
 
-    <!-- Slide 5 -->
+      <!-- Slide -->
 
-    <section>
-      <h2>Cool, we got the problem. Before we jump, Eyes on:</h2>
-      <ul>
-        <li>Effects: ZIO</li>
-        <li>Semigroup</li>
-        <li>Natural Transformation: The impl of abstraction into ZIO</li>
-      </ul>
-      <p>We use ZIO for a variety of reasons.</p>
-    </section>
+      <section>
+        <h3 class="fragment grow">Let us write FP for a Bigdata problem </h3>
+        <h6 class="fragment">Handling REAL WORLD requirements. </h6>
+        <h6 class="fragment">And finish off development fairly quickly - we have say 3 months</h6>
+        <br>
+      </section>
+
+      <!-- Slide -->
+
+      <section>
+        <section id="fragments">
+          <h2>The problem statement</h2>
+          <h6>We have billions of events of customers clicking your netbank app.</h6>
+          <p class="fragment" align="left" style="font-size:30px"> We keep finding various attributes of customers - Ex:
+            total transactions in last 3 weeks </p>
+          <p class="fragment" align="left" style="font-size:30px"> We need to quickly add new business logic - new
+            attributes/features </p>
+          <p class="fragment" align="left" style="font-size:30px"> That is a thin layer of interface to declaratively
+            define clear and concise business logic - uncluttered with performance related details </p>
+          <p class="fragment" align="left" style="font-size:30px"> We may group them (compose) the list of logic in
+            anyway - may be feed them to different ML algorithms </p>
+          <p class="fragment" align="left" style="font-size:30px"> It's a batch job - we don't need realtime ML
+            training. </p>
+        </section>
+        <section>
+          <h2>They are not after-thoughts</h2>
+          <ul>
+            <li class="fragment" style="font-size:30px">We should be able to introspect for quick performance hiccups
+              due to declarative interface.</li>
+            <li class="fragment" style="font-size:30px">Error channels - bring them straight away into the code</li>
+            <li class="fragment" style="font-size:30px">Business level DSL</li>
+            <li class="fragment" style="font-size:30px">Quick fixes of imperative systems</li>
+            <li class="fragment" style="font-size:30px">Backend agnostic - atleast to some extent</li>
+            <li class="fragment" style="font-size:30px">Testability</li>
+            <li class="fragment" style="font-size:30px">Should be relatively quick, we don't have much time.</li>
+          </ul>
+        </section>
+      </section>
 
 
-    <!-- Slide 5 -->
+      <!--Slide -->
+      <section>
+        <h2>A simple feature definition</h2>
 
-    <section>
-      <h2>So, before we deep dive</h2>
-      <ul>
-        <li>Effects: ZIO</li>
-        <li>Semigroup</li>
-        <li>Natural Transformation: The impl of abstraction into ZIO</li>
-      </ul>
-      <p>We use ZIO for a variety of reasons.</p>
-    </section>
+      </section>
 
 
-    <!-- Slide 6 -->
+      <!-- Slide 18 -->
 
-    <section>
-      <h2> The mental model of ZIO </h2>
-      <div>
-            <pre><code class="hljs scala" data-trim>
-                ...
+      <section data-transition="fade-out">
+        <h2>A single feature definition is equivalent to</h2>
+        Find out the usage of chrome per customer in last 2 weeks.
+        <pre><code class="hljs sql" data-trim data-trim data-line-numbers="1-10">
+          select
+            customer_id,
+            sum(when("browser" == "safari") 1 else 0) 
+            as "browser_safari_count_0-2w"
+          from 
+          input_table
+          group by customer_id
+          where
+            time < time_stamp() &&
+            time >= minusDays(time_stamp(), 14)
+        </code></pre>
 
-                  ZIO[R, E, A]
-                  // ZIO[Environment, Error, Result]
-                ...
+      </section>
+
+      <!-- Slide-->
+      <section data-transition="fade-in">
+        <h2>However the main expression here is</h2>
+        Find out the usage of chrome per customer in last 2 weeks.
+        <pre><code class="hljs sql" data-trim data-line-numbers="3,4,6">
+          select
+            customer_id,
+            sum(when("browser" == "safari") 1 else 0) 
+            as "browser_safari_count_0-2w"
+          from 
+          input_table
+          group by customer_id
+          where
+            time < time_stamp() &&
+            time >= minusDays(time_stamp(), 14)
            </code></pre>
 
-      </div>
-      <div>
-            <pre><code class="hljs scala" data-trim>
-                ...
+      </section>
 
-                  R => Either[E, A]
+      <!--Slide -->
+      <section data-transition="fade-in">
+        <h2>Let's simplify the feature name</h2>
+        Find out the usage of chrome per customer in last 2 weeks.
+        <pre><code class="hljs sql" data-trim data-line-numbers="3,4,6">
+            select
+              customer_id,
+              sum(when("browser" == "safari") 1 else 0) 
+              as "browser_safari_count"
+            from 
+            input_table
+            group by customer_id
+            where
+              time < time_stamp() &&
+              time >= minusDays(time_stamp(), 14)
+             </code></pre>
 
-                  // Given an input R,
-                  // the computation either returns an Error or a result A.
-                ...
-            </code></pre>
-      </div>
-    </section>
+      </section>
 
-    <!-- Slide 7 -->
 
-    <section>
-                     <pre><code class="hljs scala">
+      <!--Slide -->
+      <section data-transition="fade-out">
+        <h2>In short</h2>
+        <pre><code class="hljs scala" data-trim data-line-numbers="1-3">
+          sum(when("browser" == "safari") 1 else 0) 
+          as "browser_safari_count"
+          from input_table of 0-14 days
+       </code></pre>
+
+      </section>
+
+      <!-- Slide -->
+      <section data-transition="fade-out">
+        <h2>Let's make it compile.</h2>
+        <pre><code class="hljs scala" data-trim data-line-numbers="1-6">
+          FeatureDef(
+            dir("input_table"),
+            sum(when("browser" == "safari") 1 else 0),
+            browser_safari_count
+            0 ~ 14 days
+          )
+         </code></pre>
+
+      </section>
+
+      <!--Slide-->
+      <section data-transition="fade-out">
+        <h2>And we may have complex input - ofcourse!</h2>
+        <pre><code class="hljs scala" data-trim data-line-numbers="1-6">
+            FeatureDef(
+              dir("input_table").join(dir("another_table")).orElse(const("myTestData")),
+              sum(when("browser" == "safari") 1 else 0),
+              browser_safari_count
+              0 ~ 14 days
+            )
+           </code></pre>
+
+      </section>
+
+      <!--Slide-->
+      <section data-transition="fade-out">
+        <h2>Well, let's keep it simple - A constant input</h2>
+        <pre><code class="hljs scala" data-trim data-line-numbers="1-6">
+              FeatureDef(
+                const(data),
+                sum(when("browser" == "safari") 1 else 0),
+                browser_safari_count
+                0 ~ 14 days
+              )
+             </code></pre>
+
+      </section>
+
+      <!-- Slide 7 -->
+
+      <!-- Slide 5 -->
+
+      <section>
+        <h2>Eyes on:</h2>
+        <ul>
+          <li>Effects: ZIO</li>
+          <li>Semigroup</li>
+          <li>Natural Transformation: The impl of abstraction into ZIO</li>
+        </ul>
+        <p>We use ZIO for a variety of reasons.</p>
+      </section>
+
+      <!-- Slide 6 -->
+
+      <section>
+        <h2> The mental model of ZIO </h2>
+        <div>
+          <pre><code class="hljs scala" data-trim>
+                  ...
+  
+                    ZIO[R, E, A]
+                    // ZIO[Environment, Error, Result]
+                  ...
+             </code></pre>
+
+        </div>
+        <div>
+          <pre><code class="hljs scala" data-trim>
+                  ...
+  
+                    R => Either[E, A]
+  
+                    // Given an input R,
+                    // the computation either returns an Error or a result A.
+                  ...
+              </code></pre>
+        </div>
+      </section>
+
+      <!--Slide-->
+
+      <section>
+        <pre><code class="hljs scala">
                 ...
 
                   sealed trait FeatureGen[D, Expr, A]
 
                 ...
             </code></pre>
-    </section>
+      </section>
 
-    <!-- Slide 8 -->
+      <!-- Slide 8 -->
 
 
-    <section>
-                        <pre><code class="hljs scala" style="font-size:19px">
+      <section>
+        <pre><code class="hljs scala" style="font-size:19px">
                 ...
 
 final case class CreateFeatures[D, Expr](input: FeatureDef[D, Expr]) extends FeatureGen[D, Expr, FeatureRes[D]]
               ...
 
             </code></pre>
-    </section>
+      </section>
 
 
-    <!-- Slide 9 -->
+      <!-- Slide 9 -->
 
-    <section>
-            <pre><code class="hljs scala">
+      <section>
+        <pre><code class="hljs scala">
 def findRequests(
   x: FeatureGen[D, Expr, B]
  ): List[SMap[Source[D], List[Logic[Expr]]]] = ???
             </code></pre>
-    </section>
+      </section>
 
-    <!-- Slide 10 -->
+      <!-- Slide 10 -->
 
-    <section>
-            <pre><code class="hljs scala" style="font-size:19px">
+      <section>
+        <pre><code class="hljs scala" style="font-size:19px">
 def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
     fa match {
       case CreateFeatures(featureDef) => ???
@@ -231,13 +333,13 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
     }
 }
             </code></pre>
-    </section>
+      </section>
 
 
-    <!-- Slide 11 - code0 -->
+      <!-- Slide 11 - code0 -->
 
-    <section data-transition="fade-out">
-            <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="7,8,9" data-noescape>
+      <section data-transition="fade-out">
+        <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="7,8,9" data-noescape>
 def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
   def loop[B](
      value: FeatureGen[D, Expr, B],
@@ -258,13 +360,13 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
 }
 
             </code></pre>
-    </section>
+      </section>
 
-    <!-- Slide 12 - code0 -->
+      <!-- Slide 12 - code0 -->
 
 
-    <section data-transition="fade-in">
-            <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="9,10" data-noescape>
+      <section data-transition="fade-in">
+        <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="9,10" data-noescape>
 def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
   def loop[B](
      value: FeatureGen[D, Expr, B],
@@ -284,14 +386,14 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
   loop(fa, List.empty[SMap[Source[D], List[Logic[Expr]]]])
 }
       </code></pre>
-    </section>
+      </section>
 
 
-    <!-- Slide 13 - code0 -->
+      <!-- Slide 13 - code0 -->
 
 
-    <section data-transition="fade-out">
-            <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="11" data-noescape>
+      <section data-transition="fade-out">
+        <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="11" data-noescape>
 def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
   def loop[B](
      value: FeatureGen[D, Expr, B],
@@ -312,13 +414,13 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
 }
 
             </code></pre>
-    </section>
+      </section>
 
-    <!-- Slide 14 - code0 -->
+      <!-- Slide 14 - code0 -->
 
 
-    <section data-transition="fade-in">
-            <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="12" data-noescape>
+      <section data-transition="fade-in">
+        <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="12" data-noescape>
 def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
   def loop[B](
      value: FeatureGen[D, Expr, B],
@@ -338,13 +440,13 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
   loop(fa, List.empty[SMap[Source[D], List[Logic[Expr]]]])
 }
             </code></pre>
-    </section>
+      </section>
 
 
-    <!-- Slide 15 - code0 -->
+      <!-- Slide 15 - code0 -->
 
-    <section data-transition="fade-out">
-            <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="13" data-noescape>
+      <section data-transition="fade-out">
+        <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="13" data-noescape>
 def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
   def loop[B](
      value: FeatureGen[D, Expr, B],
@@ -364,12 +466,12 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
   loop(fa, List.empty[SMap[Source[D], List[Logic[Expr]]]])
 }
             </code></pre>
-    </section>
+      </section>
 
-    <!-- Slide 16 - code0 -->
+      <!-- Slide 16 - code0 -->
 
-    <section data-transition="fade-in">
-            <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="14" data-noescape>
+      <section data-transition="fade-in">
+        <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="14" data-noescape>
 def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
   def loop[B](
      value: FeatureGen[D, Expr, B],
@@ -389,44 +491,21 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
   loop(fa, List.empty[SMap[Source[D], List[Logic[Expr]]]])
 }
             </code></pre>
-    </section>
+      </section>
 
 
-    <!-- Slide 18 -->
 
-    <section>
-      <h2>An example</h2>
-      Find out the usage of chrome per customer in last 2 weeks.
-      <pre><code class="hljs sql" data-trim>
+      <!-- Slide 19 -->
+
+      <section>
+        <h2> We need the count of Chrome as well </h2>
+        <pre><code class="hljs sql" data-trim>
                 ...
 
                 select
                   customer_id,
-                  sum(
-                    when("browser" == "safari") 1 else 0
-                  ) as "browser_safari_count_0-2w",
-                group by customer_id
-                where
-                  time < time_stamp() &&
-                  time >= minusDays(time_stamp(), 14)
-
-                ...
-           </code></pre>
-
-    </section>
-
-    <!-- Slide 19 -->
-
-    <section>
-      <h2> We need the count of Chrome as well </h2>
-      <pre><code class="hljs sql" data-trim>
-                ...
-
-                select
-                  customer_id,
-                  sum(
-                    when("browser" == "chrome") 1 else 0
-                  ) as "browser_chrome_count_0-2w",
+                  sum(when("browser" == "chrome") 1 else 0) 
+                  as "browser_chrome_count_0-2w",
                 group by customer_id
                 where
                   time < time_stamp() &&
@@ -437,134 +516,57 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
 
 					    </code></pre>
 
+      </section>
 
-    </section>
+      <!-- Slide -->
+      <section>
+        <video controls="controls" width="800" height="600" name="Video Name"
+          data-src="/Users/afsalthaj/Documents/Flink_Job/combineAllEffJoin.mov">
+        </video>
+      </section>
 
-
-    <!-- Slide 20 -->
-
-    <section>
-      <h3>Can't we squash them into a single query ?</h3>
-      <p>Let's assume we have a query engine that supports it.</p>
-      <pre><code class="hljs sql" data-trim>
-                ...
-
-                select
-                  customer_id,
-                  sum(
-                    when("browser" == "chrome") 1 else 0
-                  ) as "browser_chrome_count_0-2w",
-                  sum(
-                    when("browser" == "safari") 1 else 0
-                  ) as "browser_safari_count_0-2w",
-                group by customer_id
-                where
-                  time < time_stamp() &&
-                  time >= minusDays(time_stamp(), 14)
-
-                ...
-
-					    </code></pre>
-
-    </section>
-
-    <!-- Slide 21 -->
-
-    <section>
-      <h2>Let's formalise our challenges.</h2>
-    </section>
-    <section>
-      <h3>Challenges.</h3>
-      <ul>
-        <li>We have dozen of event types - not just 1 event.</li>
-        <li>There are 1000s of features from each of these events.</li>
-        <li>Features are dependent to each other - either logically or for optimisations</li>
-        <li>Add new features.</li>
-        <li>Change in existing features.</li>
-      </ul>
-    </section>
-    <section>
-      <h3>Challenges continued..</h3>
-      <ul>
-        <li>Obvious performance considerations</li>
-        <li>Scalable number of features</li>
-        <li>Constantly increasing time period</li>
-        <li>Reducing redundancy</li>
-        <li>Windowing</li>
-        <li>IO</li>
-      </ul>
-    </section>
-    <section>
-      <h3>And Challenges continued..</h3>
-      <ul>
-        <li>Opt</li>
-        <li>Scalable number of features</li>
-        <li>Reducing redundancy</li>
-        <li>Windowing</li>
-        <li>IO</li>
-      </ul>
-    </section>
-    <section>
-      <h3>Too late on:</h3>
-      <ul>
-        <li> Performance</li>
-        <li> Correctness</li>
-        <li> How can we add new features and functionalities quickly</li>
-        <li> Or here</li>
-      </ul>
-    </section>
-    <section>
-      <h2>Abstract away.</h2>
-      <pre><code class="hljs scala" data-trim>
-						sealed trait FeatureEngineeringWorkflow[D, C, A]
-
-						object {
-						  case class ReadData[D]() extends FeatureEngineeringWorkflow[D]
-						}
-
-					    </code></pre>
-      <p>Trying out :) </p>
-    </section>
+      <!-- Slide 20 -->
+    </div>
   </div>
-</div>
 
-<script src="js/reveal.js"></script>
+  <script src="js/reveal.js"></script>
 
-<script>
-			// More info about config & dependencies:
-			// - https://github.com/hakimel/reveal.js#configuration
-			// - https://github.com/hakimel/reveal.js#dependencies
-			Reveal.initialize({
-				// ...
+  <script>
+    // More info about config & dependencies:
+    // - https://github.com/hakimel/reveal.js#configuration
+    // - https://github.com/hakimel/reveal.js#dependencies
+    Reveal.initialize({
+      // ...
 
-	            // The "normal" size of the presentation, aspect ratio will be preserved
-	            // when the presentation is scaled to fit different resolutions. Can be
-	            // specified using percentage units.
-	            width: 1300,
-	            height: 750,
+      // The "normal" size of the presentation, aspect ratio will be preserved
+      // when the presentation is scaled to fit different resolutions. Can be
+      // specified using percentage units.
+      width: 1300,
+      height: 750,
 
-	            // Factor of the display size that should remain empty around the content
-	            margin: 0.1,
+      // Factor of the display size that should remain empty around the content
+      margin: 0.1,
 
-	            // Bounds for smallest/largest possible scale to apply to content
-	            minScale: 0.2,
-	            maxScale: 1.5,
-				dependencies: [
-					{ src: 'plugin/markdown/marked.js' },
-					{ src: 'plugin/markdown/markdown.js' },
-					{ src: 'plugin/notes/notes.js', async: true },
-					{ src: 'plugin/highlight/highlight.js', async: true },
-                    { src: 'https://d3js.org/d3.v4.min.js' },
-                    { src: 'plugin/d3js/d3js.js' }
-				]
-			});
-
+      // Bounds for smallest/largest possible scale to apply to content
+      minScale: 0.2,
+      maxScale: 1.5,
+      dependencies: [
+        { src: 'plugin/markdown/marked.js' },
+        { src: 'plugin/markdown/markdown.js' },
+        { src: 'plugin/notes/notes.js', async: true },
+        { src: 'plugin/highlight/highlight.js', async: true },
+        { src: 'https://d3js.org/d3.v4.min.js' },
+        { src: 'plugin/d3js/d3js.js' }
+      ]
+    });
 
 
 
 
 
 
-</script>
+
+  </script>
 </body>
+
 </html>
