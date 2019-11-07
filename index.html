@@ -245,12 +245,11 @@
       </section>
 
       <section>
-        <h6>And we may have complex input!</h6>
+        <h3>And we can have complex input.</h3>
       </section>
 
       <!--Slide-->
       <section data-transition="fade-out">
-        <h2>And we may have complex input - ofcourse!</h2>
         <pre><code class="hljs scala" data-trim data-line-numbers="2">
             FeatureDef(
               dir("input_table").join(dir("another_table")).orElse(const("myTestData")),
@@ -265,12 +264,12 @@
 
       <section>
         <h6>And we can have a list of them</h6>
-        <pre><code class="hljs scala" data-trim data-line-numbers="1-10">
+        <pre><code class="hljs" data-trim data-line-numbers="1-10">
           List(
-            FeatureDef(dir("account"),......),
-            FeatureDef(dir("payments"),......),
-            FeatureDef(dir("account").join(dir("payments")),......),
-            FeatureDef(const(data),......),
+            FeatureDef(dir("account"), sum(acc_bal)......),
+            FeatureDef(dir("payments"), sum(debit).when(country == 'aus')......),
+            FeatureDef(dir("account").join(dir("payments")), max(acc_bal)......),
+            FeatureDef(const(data), min(acc_bal)......),
           )
 
          </code></pre>
