@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="css/theme/beige.css">
 
   <!-- Theme used for syntax highlighting of code -->
-  <link rel="stylesheet" href="lib/css/monokai.css">
+  <link rel="stylesheet" href="lib/css/atelier-plateau-light.css">
 
 
   <!-- Printing and PDF exports -->
@@ -152,7 +152,7 @@
 
       <section data-transition="fade-out">
         <h2>A single feature definition is equivalent to</h2>
-        <pre><code class="hljs sql" data-trim data-trim data-line-numbers="1-10">
+        <pre><code class="hljs sql" style="font-size:22px;" data-trim data-trim data-line-numbers="1-10">
           select
             customer_id,
             sum(coalesce(account_balance, 0)) 
@@ -170,7 +170,7 @@
       <!-- Slide-->
       <section data-transition="fade-in">
         <h2>We could reduce it down to</h2>
-        <pre><code class="hljs sql" data-trim data-line-numbers="3,4,6,10">
+        <pre><code class="hljs sql" style="font-size:22px;" data-trim data-line-numbers="3,4,6,10">
           select
             customer_id,
             sum(coalesce(account_balance, 0)) 
@@ -188,7 +188,7 @@
       <!--Slide -->
       <section data-transition="fade-out">
         <h2>In short</h2>
-        <pre><code class="hljs scala" data-trim data-line-numbers="1-10">
+        <pre><code class="hljs scala" style="font-size:22px;" data-trim data-line-numbers="1-10">
           ...
 
           sum(coalesce(account_balance, 0)) 
@@ -203,7 +203,7 @@
       <!--Slide -->
       <section data-transition="fade-out">
         <h2>Silly thing, Fix feature name</h2>
-        <pre><code class="hljs scala" data-trim data-line-numbers="4">
+        <pre><code class="hljs scala"  style="font-size:22px;" data-trim data-line-numbers="4">
                   ...
         
                   sum(coalesce(account_balance, 0)) 
@@ -218,7 +218,7 @@
       <!--Slide -->
       <section data-transition="fade-out">
         <h2>Silly thing, Fix feature name</h2>
-        <pre><code class="hljs scala" data-trim data-line-numbers="4">
+        <pre><code class="hljs scala" style="font-size:22px;" data-trim data-line-numbers="4">
                         ...
               
                         sum(coalesce(account_balance, 0)) 
@@ -233,7 +233,7 @@
       <!-- Slide -->
       <section data-transition="fade-out">
         <h2>Let's make it compile.</h2>
-        <pre><code class="hljs scala" data-trim data-line-numbers="1-6">
+        <pre><code class="hljs scala" style="font-size:22px;" data-trim data-line-numbers="1-6">
           FeatureDef(
             dir("input_table"),
             sum(coalesce(account_balance, 0)) 
@@ -250,7 +250,7 @@
 
       <!--Slide-->
       <section data-transition="fade-out">
-        <pre><code class="hljs scala" data-trim data-line-numbers="2">
+        <pre><code class="hljs scala"  style="font-size:22px;" data-trim data-line-numbers="2">
             FeatureDef(
               dir("input_table").join(dir("another_table")).orElse(const("myTestData")),
               sum(when("browser" == "safari") 1 else 0),
@@ -264,7 +264,7 @@
 
       <section>
         <h6>And we can have a list of them</h6>
-        <pre><code class="hljs" data-trim data-line-numbers="1-10">
+        <pre><code class="hljs" style="font-size:22px;" data-trim data-line-numbers="1-10">
           List(
             FeatureDef(dir("account"), sum(acc_bal)......),
             FeatureDef(dir("payments"), sum(debit).when(country == 'aus')......),
@@ -285,7 +285,7 @@
 
       <section>
         <h6> Something along ther lines of</h6>
-        <pre><code class="hljs scala" data-trim data-line-numbers="1-100">
+        <pre><code class="hljs scala" style="font-size:22px;" data-trim data-line-numbers="1-100">
             val list: List[FeatureDef[D]] = ???
             
             def start(featureDef: FeatureDef[D]): FeatureGen[FeatureResult[D]] = ???
@@ -344,31 +344,95 @@
         </div>
       </section>
 
-      <!--Slide-->
-
-      <section>
-        <pre><code class="hljs scala">
-                ...
-
-                  sealed trait FeatureGen[D, Expr, A]
-
-                ...
-            </code></pre>
-      </section>
 
       <!-- Slide 8 -->
 
-
       <section>
-        <pre><code class="hljs scala" style="font-size:19px">
-                ...
+        <section>
+          <pre><code class="hljs scala" style="font-size:19px;" data-trim>
 
-final case class CreateFeatures[D, Expr](input: FeatureDef[D, Expr]) extends FeatureGen[D, Expr, FeatureRes[D]]
-              ...
-
+          sealed trait FeatureGen[D, E, A] { self =>           
+            def map[B](f: A => B): FeatureGen[D, E, B] = ???
+          }
+        </code></pre>
+        </section>
+        <section>
+          <pre><code class="hljs scala" style="font-size:19px;">
+  final case class CreateFeatures[D, E](input: FeatureDef[D, E]) extends FeatureGen[D, E, FeatureRes[D]]
+  final case class JoinFeatures[D, E](f1: FeatureGen[D, E, FeatureRes[D]], f2: FeatureGen[D, E, FeatureRes[D]]) extends FeatureGen[D, E, FeatureRes[D]]
+  final case class Map[D, E, A, B](feature1: FeatureGen[D, E, A], f: A => B) extends FeatureGen[D, E, B]
             </code></pre>
-      </section>
+        </section>
+        <section>
+          <pre><code class="hljs scala" style="font-size:19px;" data-trim>
+            sealed trait FeatureGen[D, E, A] { self =>           
+              def map[B](f: A => B): FeatureGen[D, E, B] = 
+                FeatureGen.Map(self, f)
+            }
+          </code></pre>
+        </section>
+        <section data-transition="fade-out">
+          <pre><code class="hljs scala" style="font-size:19px;" data-trim>
+              def sequence[D, E, A](list: List[FeatureGen[D, E, A]]): FeatureGen[D, E, List[A]] = ???
+            </code></pre>
+        </section>
+        <section data-transition="fade-in">
+          <pre><code class="hljs scala" style="font-size:19px;" data-trim>
+             def sequence[D, E, A](list: List[FeatureGen[D, E, A]]): FeatureGen[D, E, List[A]] = 
+               list.foldLeft(???)((fa, ga) => fa ??? ga )
+              </code></pre>
+        </section>
+        <section data-transition="fade-in">
+          <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="1,2,9" data-trim >
+              final case class Pure[D, E, A](value: A) extends FeatureGen[D, E, A] 
+              final case class Zip[D, E, A, B](f: FeatureGen[D, E, A], g: FeatureGen[D, E, B])
+              final case class CreateFeatures[D, E](input: FeatureDef[D, E]) extends FeatureGen[D, E, FeatureRes[D]]
+              final case class JoinFeatures[D, E](f1: FeatureGen[D, E, FeatureRes[D]], f2: FeatureGen[D, E, FeatureRes[D]]) extends FeatureGen[D, E, FeatureRes[D]]
+              final case class Map[D, E, A, B](feature1: FeatureGen[D, E, A], f: A => B) extends FeatureGen[D, E, B]
+          </code></pre>
+        </section>
+        <section data-transition="fade-out">
+          <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="2,3"  data-trim>
+              sealed trait FeatureGen[D, E, A] { self =>   
+                def <*>[B](feature2: FeatureGen[D, E, B]): FeatureGen[D, E, (A, B)] =
+                  FeatureGen.Zip(self, feature2)
 
+                def map2[B, C](that: FeatureGen[D, E, B])(f: (A, B) => C): FeatureGen[D, E, C] =
+                  (self zip that).map({ case (a, b) => f(a, b) })
+              
+                def map[B](f: A => B): FeatureGen[D, E, B] =
+                  FeatureGen.Map(self, f)
+              }
+              </code></pre>
+        </section>
+        <section data-transition="fade-out">
+          <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="5,6"  data-trim>
+                sealed trait FeatureGen[D, E, A] { self =>   
+                  def <*>[B](feature2: FeatureGen[D, E, B]): FeatureGen[D, E, (A, B)] =
+                    FeatureGen.Zip(self, feature2)
+  
+                  def map2[B, C](that: FeatureGen[D, E, B])(f: (A, B) => C): FeatureGen[D, E, C] =
+                    (self zip that).map({ case (a, b) => f(a, b) })
+                
+                  def map[B](f: A => B): FeatureGen[D, E, B] =
+                    FeatureGen.Map(self, f)
+                }
+                </code></pre>
+        </section>
+        <section data-transition="fade-in">
+          <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="2" data-trim>
+               def sequence[D, E, A](list: List[FeatureGen[D, E, A]]): FeatureGen[D, E, List[A]] = 
+                 list.foldLeft(???)((fa, ga) => fa ??? ga )
+                </code></pre>
+        </section>
+        <section data-transition="fade-in">
+          <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="2" data-trim>
+              def sequence[D, E, A](list: List[FeatureGen[D, E, A]]): FeatureGen[D, E, List[A]] = 
+                list.foldLeft(FeatureGen.pure[D, Expr, List[A]](List.empty[A]))((aa, bb) => bb.map2(aa)(_ :: _))
+                </code></pre>
+        </section>
+
+      </section>
 
       <!-- Slide 9 -->
 
@@ -383,7 +447,7 @@ def findRequests(
       <!-- Slide 10 -->
 
       <section>
-        <pre><code class="hljs scala" style="font-size:19px">
+        <pre><code class="hljs scala" style="font-size:22px;">
 def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
     fa match {
       case CreateFeatures(featureDef) => ???
@@ -401,7 +465,7 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
       <!-- Slide 11 - code0 -->
 
       <section data-transition="fade-out">
-        <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="7,8,9" data-noescape>
+        <pre><code class="hljs scala" style="font-size:22px;" data-trim data-line-numbers="7,8,9" data-noescape>
 def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
   def loop[B](
      value: FeatureGen[D, Expr, B],
@@ -428,7 +492,7 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
 
 
       <section data-transition="fade-in">
-        <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="9,10" data-noescape>
+        <pre><code class="hljs scala" style="font-size:22px;" data-trim data-line-numbers="9,10" data-noescape>
 def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
   def loop[B](
      value: FeatureGen[D, Expr, B],
@@ -455,7 +519,7 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
 
 
       <section data-transition="fade-out">
-        <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="11" data-noescape>
+        <pre><code class="hljs scala" style="font-size:22px;" data-trim data-line-numbers="11" data-noescape>
 def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
   def loop[B](
      value: FeatureGen[D, Expr, B],
@@ -482,7 +546,7 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
 
 
       <section data-transition="fade-in">
-        <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="12" data-noescape>
+        <pre><code class="hljs scala" style="font-size:22px;" data-trim data-line-numbers="12" data-noescape>
 def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
   def loop[B](
      value: FeatureGen[D, Expr, B],
@@ -508,7 +572,7 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
       <!-- Slide 15 - code0 -->
 
       <section data-transition="fade-out">
-        <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="13" data-noescape>
+        <pre><code class="hljs scala" style="font-size:22px;" data-trim data-line-numbers="13" data-noescape>
 def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
   def loop[B](
      value: FeatureGen[D, Expr, B],
@@ -533,7 +597,7 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
       <!-- Slide 16 - code0 -->
 
       <section data-transition="fade-in">
-        <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="14" data-noescape>
+        <pre><code class="hljs scala" style="font-size:22px;" data-trim data-line-numbers="14" data-noescape>
 def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Source[D], List[Logic[Expr]]]] = {
   def loop[B](
      value: FeatureGen[D, Expr, B],
@@ -564,7 +628,7 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
       <!-- Slide -->
       <section>
         <h2>Let's define the set of features !</h2>
-        <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="1-100" data-noescape>
+        <pre><code class="hljs scala" style="font-size:22px;" data-trim data-line-numbers="1-100" data-noescape>
             List(
               FeatureDef(
                 const(table),
