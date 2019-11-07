@@ -101,8 +101,20 @@
         <section id="fragments">
           <h2>The problem statement</h2>
           <h6>We have billions of events of customers clicking your netbank app.</h6>
-          <p class="fragment" align="left" style="font-size:30px"> We keep finding various attributes of customers - Ex:
+          <h6>We have millions of customer account data.</h6>
+          <h6>and so on an so forth..</h6>
+        </section>
+        <section>
+          <p class="fragment" align="left" style="font-size:30px"> We keep finding various attributes of customers -
+            Ex:
             total transactions in last 3 weeks </p>
+          <p class="fragment" align="left" style="font-size:30px"> We join those features to form a wide table </p>
+          <p class="fragment" align="left" style="font-size:30px"> We should feed them to different ML training models
+          </p>
+          <p class="fragment" align="left" style="font-size:30px"> And we can have 100s of such wide tables, and each
+            one can
+            have 1000s of attributes/features
+          </p>
           <p class="fragment" align="left" style="font-size:30px"> We need to quickly add new business logic - new
             attributes/features </p>
           <p class="fragment" align="left" style="font-size:30px"> That is a thin layer of interface to declaratively
@@ -131,6 +143,7 @@
       <!--Slide -->
       <section>
         <h2>A simple feature definition</h2>
+        <h6> Find out sum of account balance of all customers in last 14 days.</h6>
 
       </section>
 
@@ -139,12 +152,11 @@
 
       <section data-transition="fade-out">
         <h2>A single feature definition is equivalent to</h2>
-        Find out the usage of chrome per customer in last 2 weeks.
         <pre><code class="hljs sql" data-trim data-trim data-line-numbers="1-10">
           select
             customer_id,
-            sum(when("browser" == "safari") 1 else 0) 
-            as "browser_safari_count_0-2w"
+            sum(coalesce(account_balance, 0)) 
+            as "account_balance_0_14d"
           from 
           input_table
           group by customer_id
@@ -157,13 +169,12 @@
 
       <!-- Slide-->
       <section data-transition="fade-in">
-        <h2>However the main expression here is</h2>
-        Find out the usage of chrome per customer in last 2 weeks.
-        <pre><code class="hljs sql" data-trim data-line-numbers="3,4,6">
+        <h2>We could reduce it down to</h2>
+        <pre><code class="hljs sql" data-trim data-line-numbers="3,4,6,10">
           select
             customer_id,
-            sum(when("browser" == "safari") 1 else 0) 
-            as "browser_safari_count_0-2w"
+            sum(coalesce(account_balance, 0)) 
+            as "account_balance_0_14d"
           from 
           input_table
           group by customer_id
@@ -175,33 +186,47 @@
       </section>
 
       <!--Slide -->
-      <section data-transition="fade-in">
-        <h2>Let's simplify the feature name</h2>
-        Find out the usage of chrome per customer in last 2 weeks.
-        <pre><code class="hljs sql" data-trim data-line-numbers="3,4,6">
-            select
-              customer_id,
-              sum(when("browser" == "safari") 1 else 0) 
-              as "browser_safari_count"
-            from 
-            input_table
-            group by customer_id
-            where
-              time < time_stamp() &&
-              time >= minusDays(time_stamp(), 14)
-             </code></pre>
+      <section data-transition="fade-out">
+        <h2>In short</h2>
+        <pre><code class="hljs scala" data-trim data-line-numbers="1-10">
+          ...
+
+          sum(coalesce(account_balance, 0)) 
+          as "account_balance_0_14d"
+          from input_table of 0-14 days
+
+          ...
+       </code></pre>
 
       </section>
 
+      <!--Slide -->
+      <section data-transition="fade-out">
+        <h2>Silly thing, Fix feature name</h2>
+        <pre><code class="hljs scala" data-trim data-line-numbers="4">
+                  ...
+        
+                  sum(coalesce(account_balance, 0)) 
+                  as "account_balance_0_14d"
+                  from input_table of 0-14 days
+        
+                  ...
+               </code></pre>
+
+      </section>
 
       <!--Slide -->
       <section data-transition="fade-out">
-        <h2>In short</h2>
-        <pre><code class="hljs scala" data-trim data-line-numbers="1-3">
-          sum(when("browser" == "safari") 1 else 0) 
-          as "browser_safari_count"
-          from input_table of 0-14 days
-       </code></pre>
+        <h2>Silly thing, Fix feature name</h2>
+        <pre><code class="hljs scala" data-trim data-line-numbers="4">
+                        ...
+              
+                        sum(coalesce(account_balance, 0)) 
+                        as "account_balance"
+                        from input_table of 0-14 days
+              
+                        ...
+                     </code></pre>
 
       </section>
 
@@ -211,12 +236,16 @@
         <pre><code class="hljs scala" data-trim data-line-numbers="1-6">
           FeatureDef(
             dir("input_table"),
-            sum(when("browser" == "safari") 1 else 0),
-            browser_safari_count
+            sum(coalesce(account_balance, 0)) 
+            "account_balance"
             0 ~ 14 days
           )
          </code></pre>
 
+      </section>
+
+      <section>
+        <h6>And we may have complex input!</h6>
       </section>
 
       <!--Slide-->
@@ -232,21 +261,50 @@
            </code></pre>
       </section>
 
-      <!--Slide-->
-      <section data-transition="fade-out">
-        <h2>Well, let's keep it simple - A constant input</h2>
-        <pre><code class="hljs scala" data-trim data-line-numbers="1-6">
-              FeatureDef(
-                const(data),
-                sum(when("browser" == "safari") 1 else 0),
-                browser_safari_count
-                0 ~ 14 days
-              )
-             </code></pre>
+      <!-- Slide 7 -->
+
+      <section>
+        <h6>And we can have a list of them</h6>
+        <pre><code class="hljs scala" data-trim data-line-numbers="1-10">
+          List(
+            FeatureDef(dir("account"),......),
+            FeatureDef(dir("payments"),......),
+            FeatureDef(dir("account").join(dir("payments")),......),
+            FeatureDef(const(data),......),
+          )
+
+         </code></pre>
+      </section>
+
+      <!-- Slide 5 -->
+
+      <section>
+        <h6>What next?</h6>
+        We should be able to compose programs.
+        <p class="frament">An interface to use the list the way user needs.</p>
+      </section>
+
+      <section>
+        <h6> Something along ther lines of</h6>
+        <pre><code class="hljs scala" data-trim data-line-numbers="1-100">
+            val list: List[FeatureDef[D]] = ???
+            
+            def start(featureDef: FeatureDef[D]): FeatureGen[FeatureResult[D]] = ???
+
+            // for instance, let's sequence it.
+            val listOfWideTables: FeatureGen[List[FeatureRes[D]]] = 
+              list.map(start).sequence
+
+            // and probably feed the list of wide tables to different ML
+            val job: FeatureGen[List[D] = 
+              listOfWideTables.flatMap(regressionModel.train)
+          
+           </code></pre>
 
       </section>
 
-      <!-- Slide 7 -->
+      <!-- Slide 5 -->
+
 
       <!-- Slide 5 -->
 
@@ -498,33 +556,90 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
             </code></pre>
       </section>
 
-
-
-      <!-- Slide 19 -->
+      <!-- Slide -->
 
       <section>
-        <h2> We need the count of Chrome as well </h2>
-        <pre><code class="hljs sql" data-trim>
-                ...
-
-                select
-                  customer_id,
-                  sum(when("browser" == "chrome") 1 else 0) 
-                  as "browser_chrome_count_0-2w",
-                group by customer_id
-                where
-                  time < time_stamp() &&
-                  time >= minusDays(time_stamp(), 14)
-
-                ...
-
-
-					    </code></pre>
-
+        <h2> Results - Let's Flink </h2>
       </section>
 
       <!-- Slide -->
       <section>
+        <h2>Let's define the set of features !</h2>
+        <pre><code class="hljs scala" style="font-size:19px" data-trim data-line-numbers="1-100" data-noescape>
+            List(
+              FeatureDef(
+                const(table),
+                'accountBalance.sum,
+                "sum_account_balance",
+                0 ~ 2 weeks
+              ),
+              FeatureDef(
+                const(table),
+                'accountBalance.max,
+                "max_account_balance",
+                0 ~ 2 weeks
+              ),
+              FeatureDef(
+                const(table),
+                'accountBalance.sum,
+                "sum_account_balance",
+                2 ~ 4 weeks
+              ),
+              FeatureDef(
+                const(table),
+                'accountBalance.max,
+                "max_account_balance",
+                2 ~ 4 weeks
+              ),
+              FeatureDef(
+                const(table),
+                'accountBalance.sum,
+                "sum_account_balance",
+                0 ~ 4 weeks,
+                Some((a: Expression, b: Expression) => a + b)
+              ),
+              FeatureDef(
+                const(table),
+                'accountBalance.max,
+                "max_account_balance",
+                0 ~ 4 weeks,
+                Some((a: Expression, b: Expression) => (a > b) ? (a, b))
+              )
+                          </code></pre>
+
+      </section>
+
+      <!-- Slide -->
+
+      <section>
+        <h4>Without Any Optimiser</h4>
+        <video width="500" height="500" controls>
+          <source src="/images/fully_unoptimised.mov" type="video/mp4">
+        </video>
+      </section>
+
+      <!-- Slide -->
+
+      <section>
+        <h4>With Join Optimiser</h3>
+          <video width="500" height="500" controls>
+            <source src="/images/combineAllEffJoin.mov" type="video/mp4">
+          </video>
+      </section>
+
+      <!-- Slide -->
+
+      <section>
+        <h4>With Join and Aggregation Optimiser</h2>
+          <video width="500" height="500" controls>
+            <source src="/images/reduce_aggregations.mov" type="video/mp4">
+          </video>
+      </section>
+
+      <!-- Slide -->
+
+      <section>
+        <h4>With Join, Aggregation & Reuse Optimiser</h4>
         <video width="500" height="500" controls>
           <source src="/images/thbestplan.mov" type="video/mp4">
         </video>
