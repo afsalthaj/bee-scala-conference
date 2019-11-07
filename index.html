@@ -67,7 +67,7 @@
         </ul>
         <p> Result is,
           <strike style='color:maroon'> slower </strike> <span style='color:green'> faster </span> development of
-          <strike style='color:maroon'> incomplete </strike> <span style='color:green'> quality</span> solutions.
+          <strike style='color:maroon'> FP-in-small </strike> <span style='color:green'> pure FP </span> solutions.
         </p>
       </section>
 
@@ -222,7 +222,7 @@
       <!--Slide-->
       <section data-transition="fade-out">
         <h2>And we may have complex input - ofcourse!</h2>
-        <pre><code class="hljs scala" data-trim data-line-numbers="1-6">
+        <pre><code class="hljs scala" data-trim data-line-numbers="2">
             FeatureDef(
               dir("input_table").join(dir("another_table")).orElse(const("myTestData")),
               sum(when("browser" == "safari") 1 else 0),
@@ -230,7 +230,6 @@
               0 ~ 14 days
             )
            </code></pre>
-
       </section>
 
       <!--Slide-->
