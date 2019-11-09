@@ -71,22 +71,8 @@
         </p>
       </section>
 
-      <!-- Slide 4 -->
+      <!--Slide -->
 
-      <section>
-        <h2> Hence we have, and we need</h2>
-        <ul>
-          <li>Quick addition of new capabilities</li>
-          <li>Resource safety</li>
-          <li>Optimisations</li>
-          <li>Performance</li>
-          <li>Testability / Separation of concerns</li>
-          <li>Intuitive error handling, and AOP style logging</li>
-          <li>All of them should compose ...</li>
-        </ul>
-      </section>
-
-      <!--Slide-->
       <section>
         <h3>Possible, if we have a proper encoding of our application domain.</h3>
       </section>
@@ -109,19 +95,16 @@
           <h6>and so on an so forth..</h6>
         </section>
         <section>
-          <p class="fragment" align="left" style="font-size:30px"> We keep finding various attributes of customers from
-            various big and small data sets -
+          <p class="fragment" align="left" style="font-size:30px"> Kepp finding attributes of customers from
             Ex:
             total transactions in last 3 weeks </p>
-          <p class="fragment" align="left" style="font-size:30px"> We join those features to form a wide table </p>
-          <p class="fragment" align="left" style="font-size:30px"> We should feed them to different ML training models
+          <p class="fragment" align="left" style="font-size:30px"> Join 1000s of them to form a wide table </p>
+          <p class="fragment" align="left" style="font-size:30px"> Feed them to ML training models
           </p>
-          <p class="fragment" align="left" style="font-size:30px"> And we can have 100s of such wide tables, and each
-            one can
-            have 1000s of attributes/features
+          <p class="fragment" align="left" style="font-size:30px"> We 10s of 100s of such wide tables, and each.
           </p>
-          <p class="fragment" align="left" style="font-size:30px"> We need to quickly add new business logic - new
-            attributes/features </p>
+          <p class="fragment" align="left" style="font-size:30px"> Quickly add/update/delete into the list of business
+          </p>
           <p class="fragment" align="left" style="font-size:30px;color: coral;"> That is a thin layer of interface to
             <span style="font-weight:800;color:black;">declaratively</span>
             define <span style="font-weight:900;color:black;">clear and concise</span> business logic - <span
@@ -135,14 +118,20 @@
         <section>
           <h2>They are not after-thoughts</h2>
           <ul>
-            <li class="fragment" style="font-size:30px">We should be able to introspect for quick performance hiccups
-              due to declarative interface.</li>
+            <li class="fragment" style="font-size:30px">Dev should be relatively quick, we don't have much time.</li>
+            <li class="fragment" style="font-size:30px">Fix performance hiccups.</li>
             <li class="fragment" style="font-size:30px">Error channels - bring them straight away into the code</li>
             <li class="fragment" style="font-size:30px">Business level DSL</li>
             <li class="fragment" style="font-size:30px">Quick fixes of imperative systems</li>
             <li class="fragment" style="font-size:30px">Backend agnostic - atleast to some extent</li>
             <li class="fragment" style="font-size:30px">Testability</li>
-            <li class="fragment" style="font-size:30px">Should be relatively quick, we don't have much time.</li>
+            <li class="fragment" style="font-size:30px">Quick addition of new capabilities</li>
+            <li class="fragment" style="font-size:30px">Resource safety</li>
+            <li class="fragment" style="font-size:30px">Optimisations</li>
+            <li class="fragment" style="font-size:30px">Performance</li>
+            <li class="fragment" style="font-size:30px">Testability / Separation of concerns</li>
+            <li class="fragment" style="font-size:30px" i>Intuitive error handling, and AOP style logging</li>
+            <li class="fragment" style="font-size:30px">All of them should compose ...</li>
           </ul>
         </section>
       </section>
@@ -700,12 +689,24 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
       </section>
 
       <!-- Slide -->
+      <section>
+        <h4> (Over) Simplified.. </h4>
+        <img src="images/worst.png" width=1000 style="border: none;">
+      </section>
+
+      <!-- Slide -->
 
       <section>
         <h4>With Join Optimiser</h3>
-          <video width="500" height="500" controls>
+          <video width=" 500" height="500" controls>
             <source src="images/combineAllEffJoin.mov" type="video/mp4">
           </video>
+      </section>
+
+      <!-- Slide -->
+      <section>
+        <h4> Simplified.. </h4>
+        <img src="images/divide_n_conquer.png" style="border: none;" width=800>
       </section>
 
       <!-- Slide -->
@@ -718,12 +719,24 @@ def listOfFeatureRequests[D, Expr, A](fa: FeatureGen[D, Expr, A]): List[SMap[Sou
       </section>
 
       <!-- Slide -->
+      <section>
+        <h4> Simplified.. </h4>
+        <img src="images/reduce_aggregation.png" style="border: none;" width=800>
+      </section>
+
+      <!-- Slide -->
 
       <section>
         <h4>With Join, Aggregation & Reuse Optimiser</h4>
         <video width="500" height="500" controls>
           <source src="images/thbestplan.mov" type="video/mp4">
         </video>
+      </section>
+
+      <!-- Slide -->
+      <section>
+        <h4> Simplified.. </h4>
+        <img src="images/thbestplan.png" style="border: none;" width=800>
       </section>
 
       <!-- Slide -->
