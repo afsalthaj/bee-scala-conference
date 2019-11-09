@@ -285,21 +285,29 @@
       </section>
 
       <section>
-        <h3> Probably, we need sort of this kind of a usage pattern</h3>
+        <h3> Probably, We need something along the lines of</h3>
         <pre><code class=" hljs scala" style="font-size:22px;" data-trim data-line-numbers="1-100">
           val list: List[FeatureDef[D]] = ???
 
           def start(featureDef: FeatureDef[D]): FeatureGen[FeatureResult[D]] = ???
 
-          // for instance, let's sequence it.
-          val listOfWideTables: FeatureGen[List[FeatureRes[D]]] =
-          list.map(start).sequence
+          def run[A](list: List[FeatureGen[D, Expr, A]]): FeatureGen[List[FeatureRes[D]]] =
+            sequence(list.map(start))
 
-          // and probably feed the list of wide tables to different ML
-          val job: FeatureGen[List[D] =
-          listOfWideTables.flatMap(regressionModel.train)
+          val job: FeatureGen[List[D] = 
+            features.flatMap(regressionModel.train)
 
           </code></pre>
+
+      </section>
+      <section>
+        <h6>Where, FeatureResult is,</h6>
+        <pre><code class=" hljs scala" style="font-size:22px;" data-trim data-line-numbers="1-100">
+
+        // Given
+        final case class FeatureRes[D](result: D, metadata: Metadata)
+        final case class Metadata(name: FeatureName, source: Vector[String])
+      </code></pre>
 
       </section>
 
@@ -367,9 +375,9 @@
         </section>
         <section>
           <pre><code class="hljs scala" style="font-size:19px;" data-noescape>
-                <p style="font-size:21px;text-align:left;"><span style="color: cadetblue;">D</span> is data</p>
-            <p style="font-size:21px;text-align:left;"><span style="color: cadetblue;">E</span> is Expression that can operate on data</p>
-            <p style="font-size:21px;text-align:left;"><span style="color: cadetblue;">A</span> is the result A</p>
+                <p style="font-size:21px;text-align:center;"><span style="color: cadetblue;">D</span> is data</p>
+            <p style="font-size:21px;text-align:center;"><span style="color: cadetblue;">E</span> is Expression that can operate on data</p>
+            <p style="font-size:21px;text-align:center;"><span style="color: cadetblue;">A</span> is the result A</p>
           </code></pre>
         </section>
         <section>
@@ -384,39 +392,78 @@
   ) extends FeatureGen[D, E, FeatureRes[D]]
             </code></pre>
         </section>
-        <section data-transition="fade-out">
+        <section>
+          <h4>Our helper functions</h4>
           <pre><code class="hljs scala" style="font-size:19px;" data-trim>
-              def sequence[D, E, A](list: List[FeatureGen[D, E, A]]): FeatureGen[D, E, List[A]] = ???
-            </code></pre>
+
+          def start[D, Expr, A](featureDef: FeatureDef[D, Expr]): FeatureGen[D, Expr, FeatureRes[D]] =
+            CreateFeatures(featureDef)
+
+          def pure[D, Expr, A](value: => A): FeatureGen[D, Expr, A] =
+            FeatureGen.Pure(value)
+
+          def fail[A](message: String): FeatureGen[Nothing, Nothing, A] =
+            FeatureGen.Fail(message)
+
+          def sequence[D, Expr, A](list: List[FeatureGen[D, Expr, A]]): FeatureGen[D, Expr, List[A]] = ???
+        </code></pre>
+
         </section>
-        <section data-transition="fade-in">
-          <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="2" data-trim>
+        <section data-transition="fade-out">
+          <h5>Sequence ??? </h5>
+          <pre><code class="hljs scala" style="font-size:19px;" data-trim>
               def sequence[D, E, A](list: List[FeatureGen[D, E, A]]): FeatureGen[D, E, List[A]] = 
-                list.foldLeft(FeatureGen.pure[D, Expr, List[A]](List.empty[A]))((aa, bb) => bb.map2(aa)(_ :: _))
-                </code></pre>
+                list.foldLeft(pure[List[A]](Nil))((aa, bb) => bb.map2(aa)(_ :: _))
+            </code></pre>
         </section>
         <section>
-          <h2>A one-time written implementation to ZIO</h2>
-          <p>For this you need a richer target effect system </p>
-          <pre><code class="hljs scala" style="font-size:19px;" data-trim>ZIO[DataOp.Service[D, Expr], AppError, A]</code></pre>
-          <pre><code class="hljs scala" style="font-size:19px;" data-trim>
-              def apply[A](fa: FeatureGen[D, Expr, A]): ZIO[DataOp.Service[D, Expr], Throwable, A] = ???
+          <h2>A one-time implementation to ZIO</h2>
+          <p style="font-size: 24px;">For this you need a richer target effect system </p>
+          <pre><code class=" hljs scala" style="font-size:30px; align-items: center;" data-trim data-noescape>
+            <span style="text-align: center;"> ZIO[DataService[D, Expr], AppError, A] </span>
             </code></pre>
-
+          <p style="font-size: 24px;">Were, DataService knows about how to do basic ops on data on how to read and
+            write given a data D.</p>
+        </section>
+        <section>
+          <p> For readability</p>
+          <pre><code class="hljs scala" style="font-size:19px;" data-trim>type AnalyticsTask[D, Expr, A] = ZIO[DataService[D, Expr], AppError, A]</code></pre>
+        </section>
+        <section>
+          <h6> An implementation is;</h6>
+          <pre><code class="hljs scala" style="font-size:19px;" data-trim>
+              def impl[D, Expr, A] = FeatureGen[D, Expr, A]) => AnalyticsTask[A]
+             </code></pre>
+        </section>
+        <section>
+          <h3>An Application Specific DataService.</h3>
+          <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="1-10" data-trim>
+            trait DataService[D, Expr] {
+              def get(input: Input[D], partition: Option[Window]): Task[D]
+              def generateFeature(d: D, featureRequest: FeatureDef[D, Expr]): Task[D]
+              def join(left: D, right: D): Task[D]
+              def convertFeature(value: FeatureName): Expr
+              def projectFeatures(d: D, value: List[Logic[Expr]]): Task[D]
+            }
+              </code></pre>
         </section>
 
         <section>
           <h2>A one-time written implementation to ZIO</h2>
           <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="1-10" data-trim>
-      def apply[A](fa: FeatureGen[D, Expr, A]): ZIO[DataOp.Service[D, Expr], Throwable, A] =
-        fa match {
-          case Pure(value)      => ZIO.succeed(value)
-          case Zip(pgm1, pgm2)  => apply(pgm1).zip(apply(pgm2))
-          case Map(pgm, f)      => apply(pgm).map(f)
-          case Fail(message)    => ZIO.fail(new AppError(message))
-          ...
+        def impl[D, Expr, A] = fa =>
+          def apply[A](fa: FeatureGen[D, Expr, A]): AnalyticsTask[A] = {
+            fa match {
+              case Pure(value)      => ZIO.succeed(value)
+              case Zip(pgm1, pgm2)  => apply(pgm1).zip(apply(pgm2))
+              case Map(pgm, f)      => apply(pgm).map(f)
+              case Fail(message)    => ZIO.fail(new AppError(message))
+            ... // In next slides
+            }
+
+          apply(fa)
         }
-    }
+       }
                 </code></pre>
         </section>
         <section>
@@ -447,7 +494,10 @@
             )
           </code></pre>
         </section>
+        <section>
+          <h6>Let's run, for that we need an implementation. Let' go with Flink</h6>
 
+        </section>
       </section>
 
       <!-- Slide 9 -->
