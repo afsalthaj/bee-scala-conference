@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="css/theme/beige.css">
 
   <!-- Theme used for syntax highlighting of code -->
-  <link rel="stylesheet" href="lib/css/atelier-plateau-light.css">
+  <link rel="stylesheet" href="lib/css/magula.css">
 
 
   <!-- Printing and PDF exports -->
@@ -239,6 +239,10 @@
           )
          </code></pre>
 
+        <pre><code class="hljs scala" style="font-size:19px;width: 1200px;" data-trim data-line-numbers="1-6">
+            final case class FeatureDef[D, Expr](inp: Input[D], op: Expr, name: String, partition: TimeWindow)
+           </code></pre>
+
       </section>
 
       <section>
@@ -386,16 +390,72 @@
             </code></pre>
         </section>
         <section data-transition="fade-in">
-          <pre><code class="hljs scala" style="font-size:19px;" data-trim>
-             def sequence[D, E, A](list: List[FeatureGen[D, E, A]]): FeatureGen[D, E, List[A]] = 
-               list.foldLeft(???)((fa, ga) => fa ??? ga )
-              </code></pre>
-        </section>
-        <section data-transition="fade-in">
           <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="2" data-trim>
               def sequence[D, E, A](list: List[FeatureGen[D, E, A]]): FeatureGen[D, E, List[A]] = 
                 list.foldLeft(FeatureGen.pure[D, Expr, List[A]](List.empty[A]))((aa, bb) => bb.map2(aa)(_ :: _))
                 </code></pre>
+        </section>
+        <section>
+          <h2>A one-time written implementation to ZIO</h2>
+          <p>For this you need a richer target effect system </p>
+          <pre><code class="hljs scala" style="font-size:19px;" data-trim>ZIO[DataOp.Service[D, Expr], AppError, A]</code></pre>
+          <pre><code class="hljs scala" style="font-size:19px;" data-trim>
+              def apply[A](fa: FeatureGen[D, Expr, A]): ZIO[DataOp.Service[D, Expr], Throwable, A] = ???
+            </code></pre>
+
+        </section>
+
+        <section>
+          <h2>A one-time written implementation to ZIO</h2>
+          <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="1-10" data-trim>
+      def apply[A](fa: FeatureGen[D, Expr, A]): ZIO[DataOp.Service[D, Expr], Throwable, A] =
+        fa match {
+          case Pure(value)      => ZIO.succeed(value)
+          case Zip(pgm1, pgm2)  => apply(pgm1).zip(apply(pgm2))
+          case Map(pgm, f)      => apply(pgm).map(f)
+          case Fail(message)    => ZIO.fail(new AppError(message))
+          ...
+        }
+    }
+                </code></pre>
+        </section>
+        <section>
+          <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="1-10" data-trim>
+          ...
+            case JoinFeatures(feature1, feature2) =>
+            apply(feature1)
+              .zip(apply(feature2))
+              .flatMap({
+                case (f1, f2) =>
+                  ZIO.accessM[DataOp.Service[D, Expr]](
+                    r => r.join(f1.value, f2.value).map(r => FeatureRes(r, f1.metadata ++ f2.metadata))
+                  )
+              })
+            ...  
+            </code></pre>
+
+        </section>
+        <section>
+          <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="1-10" data-trim>
+            case CreateFeatures(input) =>
+              ZIO.accessM[DataOp.Service[D, Expr]](
+                env =>
+                  env
+                    .get(input.input, input.forPartition)
+                    .flatMap(res => {
+                      env
+                        .generateFeature(res, input)
+                        .map(
+                          r =>
+                            FeatureRes(
+                              r,
+                              input.featuresLogic
+                                .map(t => Metadata(FeatureName(t.name, input.forPartition), input.input.toString))
+                            )
+                        )
+                    })
+            )
+          </code></pre>
         </section>
 
       </section>
