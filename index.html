@@ -438,22 +438,12 @@
         <section>
           <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="1-10" data-trim>
             case CreateFeatures(input) =>
-              ZIO.accessM[DataOp.Service[D, Expr]](
-                env =>
-                  env
-                    .get(input.input, input.forPartition)
-                    .flatMap(res => {
-                      env
-                        .generateFeature(res, input)
-                        .map(
-                          r =>
-                            FeatureRes(
-                              r,
-                              input.featuresLogic
-                                .map(t => Metadata(FeatureName(t.name, input.forPartition), input.input.toString))
-                            )
-                        )
-                    })
+              ZIO.accessM(service =>
+                env.generateFeature(input.data, input.logic, input.partition)
+                  .map(r =>
+                    FeatureRes(result, input.logic.map(t => Metadata(FeatureName(t.name, input.forPartition), input.input.toString)))
+                  )
+              })
             )
           </code></pre>
         </section>
