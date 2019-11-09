@@ -346,33 +346,39 @@
 
       <section>
         <section>
-
+          <h3>The structure.</h3>
+          <pre><code class="hljs scala" style="font-size:22px;width: 1200px;" data-line-numbers="1-10"  data-trim>
+                  sealed trait FeatureGen[D, E, A] { self =>   
+                    def <*>[B](feature2: FeatureGen[D, E, B]): FeatureGen[D, E, (A, B)] =
+                      FeatureGen.Zip(self, feature2)
+    
+                    def map2[B, C](that: FeatureGen[D, E, B])(f: (A, B) => C): FeatureGen[D, E, C] =
+                      (self zip that).map({ case (a, b) => f(a, b) })
+                  
+                    def map[B](f: A => B): FeatureGen[D, E, B] =
+                      FeatureGen.Map(self, f)
+                  }
+                  </code></pre>
+          </code></pre>
         </section>
         <section>
-          <pre><code class="hljs scala" style="font-size:25px;" data-trim>
-          sealed trait FeatureGen[D, E, A] { self =>
-            def map[B](f: A => B): FeatureGen[D, E, B] = ???
-          }
+          <pre><code class="hljs scala" style="font-size:19px;" data-noescape>
+                <p style="font-size:21px;text-align:left;"><span style="color: cadetblue;">D</span> is data</p>
+            <p style="font-size:21px;text-align:left;"><span style="color: cadetblue;">E</span> is Expression that can operate on data</p>
+            <p style="font-size:21px;text-align:left;"><span style="color: cadetblue;">A</span> is the result A</p>
           </code></pre>
-          <p style="font-size:21px;text-align:center;"><span style="color: cadetblue;">D</span> is data</p>
-          <p style="font-size:21px;text-align:center;"><span style="color: cadetblue;">E</span> is Expression that can
-            operate on data</p>
-          <p style="font-size:21px;text-align:center;"><span style="color: cadetblue;">A</span> is the result A</p>
         </section>
         <section>
           <pre><code class="hljs scala" style="font-size:19px;">
-  final case class CreateFeatures[D, E](input: FeatureDef[D, E]) extends FeatureGen[D, E, FeatureRes[D]]
-  final case class JoinFeatures[D, E](f1: FeatureGen[D, E, FeatureRes[D]], f2: FeatureGen[D, E, FeatureRes[D]]) extends FeatureGen[D, E, FeatureRes[D]]
+  final case class Pure[A](value: A) extends FeatureGen[Nothing, Nothing, A] 
+  final case class Zip[D, E, A, B](f: FeatureGen[D, E, A], g: FeatureGen[D, E, B])
   final case class Map[D, E, A, B](feature1: FeatureGen[D, E, A], f: A => B) extends FeatureGen[D, E, B]
+  final case class CreateFeatures[D, E](input: FeatureDef[D, E]) extends FeatureGen[D, E, FeatureRes[D]]
+  final case class JoinFeatures[D, E](
+    f1: FeatureGen[D, E, FeatureRes[D]], 
+    f2: FeatureGen[D, E, FeatureRes[D]]
+  ) extends FeatureGen[D, E, FeatureRes[D]]
             </code></pre>
-        </section>
-        <section>
-          <pre><code class="hljs scala" style="font-size:19px;" data-trim>
-            sealed trait FeatureGen[D, E, A] { self =>           
-              def map[B](f: A => B): FeatureGen[D, E, B] = 
-                FeatureGen.Map(self, f)
-            }
-          </code></pre>
         </section>
         <section data-transition="fade-out">
           <pre><code class="hljs scala" style="font-size:19px;" data-trim>
@@ -384,53 +390,6 @@
              def sequence[D, E, A](list: List[FeatureGen[D, E, A]]): FeatureGen[D, E, List[A]] = 
                list.foldLeft(???)((fa, ga) => fa ??? ga )
               </code></pre>
-        </section>
-        <section data-transition="fade-in">
-          <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="1,2,9" data-trim >
-              final case class Pure[D, E, A](value: A) extends FeatureGen[D, E, A] 
-              final case class Zip[D, E, A, B](f: FeatureGen[D, E, A], g: FeatureGen[D, E, B])
-              final case class CreateFeatures[D, E](input: FeatureDef[D, E]) extends FeatureGen[D, E, FeatureRes[D]]
-              final case class JoinFeatures[D, E](f1: FeatureGen[D, E, FeatureRes[D]], f2: FeatureGen[D, E, FeatureRes[D]]) extends FeatureGen[D, E, FeatureRes[D]]
-              final case class Map[D, E, A, B](feature1: FeatureGen[D, E, A], f: A => B) extends FeatureGen[D, E, B]
-          </code></pre>
-        </section>
-        <section>
-          <h3>That was a simple encoding of your application domain.</h3>
-          <h3>Now you could enrich your FeatureGen[D, Expr]</h3>
-        </section>
-        <section data-transition="fade-out">
-          <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="2,3"  data-trim>
-              sealed trait FeatureGen[D, E, A] { self =>   
-                def <*>[B](feature2: FeatureGen[D, E, B]): FeatureGen[D, E, (A, B)] =
-                  FeatureGen.Zip(self, feature2)
-
-                def map2[B, C](that: FeatureGen[D, E, B])(f: (A, B) => C): FeatureGen[D, E, C] =
-                  (self zip that).map({ case (a, b) => f(a, b) })
-              
-                def map[B](f: A => B): FeatureGen[D, E, B] =
-                  FeatureGen.Map(self, f)
-              }
-              </code></pre>
-        </section>
-        <section data-transition="fade-out">
-          <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="5,6"  data-trim>
-                sealed trait FeatureGen[D, E, A] { self =>   
-                  def <*>[B](feature2: FeatureGen[D, E, B]): FeatureGen[D, E, (A, B)] =
-                    FeatureGen.Zip(self, feature2)
-  
-                  def map2[B, C](that: FeatureGen[D, E, B])(f: (A, B) => C): FeatureGen[D, E, C] =
-                    (self zip that).map({ case (a, b) => f(a, b) })
-                
-                  def map[B](f: A => B): FeatureGen[D, E, B] =
-                    FeatureGen.Map(self, f)
-                }
-                </code></pre>
-        </section>
-        <section data-transition="fade-in">
-          <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="2" data-trim>
-               def sequence[D, E, A](list: List[FeatureGen[D, E, A]]): FeatureGen[D, E, List[A]] = 
-                 list.foldLeft(???)((fa, ga) => fa ??? ga )
-                </code></pre>
         </section>
         <section data-transition="fade-in">
           <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="2" data-trim>
