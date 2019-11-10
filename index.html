@@ -280,21 +280,14 @@
 
       <section>
         <h2>What next?</h2>
-        <p style="font-size: 30px;">We should be able to compose programs.</p>
-        <p class="frament" style="font-size: 30px;">An interface to use the list the way user needs.</p>
-      </section>
-
-      <section>
-        <h3> We need to compose them.</h3>
+        <h4> We need to compose them.</h4>
         We need more combinators. But to begin with,
         <pre><code class=" hljs scala" style="font-size:22px;" data-trim data-line-numbers="1-100">
-          def start(featureDef: FeatureDef[D]): FeatureGen[FeatureRes[D]] = ???
-
-          final case class FeatureRes[D](result: D, metadata: Metadata)
-          final case class Metadata(name: FeatureName, source: Vector[String])
-          </code></pre>
-
-        We will enrich/re-visit this soon!
+            def start(featureDef: FeatureDef[D]): FeatureGen[FeatureRes[D]] = ???
+  
+            final case class FeatureRes[D](result: D, metadata: Metadata)
+            final case class Metadata(name: FeatureName, source: Vector[String])
+            </code></pre>
       </section>
 
       <!-- Slide 8 -->
