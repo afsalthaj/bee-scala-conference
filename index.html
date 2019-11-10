@@ -100,32 +100,32 @@
           total account transactions for a customer in last 3 weeks </p>
         <p class="fragment" align="left" style="font-size:30px"> Expose a light weight interface just to quickly add new
           business logic. </p>
-        <p class="fragment" align="left" style="font-size:30px"> The interface should not be at the cost of efficiency.
-        </p>
-        <p class="fragment" align="left" style="font-size:30px"> Maximum optimisations, which is otherwise impossible
-          with handwritten language of data-source.
-        </p>
-        <p class="fragment" align="left" style="font-size:30px"> Expose a thin API to compose those features to form a
-          wide table </p>
-        <p class="fragment" align="left" style="font-size:30px"> And We have tens of hundreds of such wide tables having
-          possibly with features reused.
-        </p>
-        <p class="fragment" align="left" style="font-size:30px"> Possibly, we may feed them to ML training models at a
-          later stage.
+        <p class="fragment" align="left" style="font-size:30px"> Expose a thin API to compose/group them to
+          form a wide table of features. </p>
+        <p class="fragment" align="left" style="font-size:30px"> We further compose them to form tens of hundreds of
+          such wide tables, possibly with features reused across them.
         </p>
       </section>
       <section>
-        <h3>To sum up the requirements</h3>
+        <h3>What does that mean for us?</h3>
         <p align="left" style="font-size:30px;color: black;"> That is a thin layer of interface to
           <span style="font-weight:800;color:red;">declaratively</span>
-          define <span style="font-weight:900;color:black;">clear and concise</span> business logic - <span
+          define <span style="font-weight:900;color:black;">clear and concise</span> business logic / features - <span
             style="font-weight:900;color:red;">uncluttered</span> with
           <span style="font-weight: 900;color:red;">performance related details</span> </p>
         <p class="fragment" align="left" style="font-size:30px;color: black;"> Accompanied by an API that allows you to
           <span style="font-weight:800;color:red;">compose</span>
-          them. </p>
-        <p class="fragment" align="left" style="font-size:30px;color: red;"> The program should allow (more and quick
-          fixes for) optimisations </p>
+          each operations. </p>
+
+        <p class="fragment" align="left" style="font-size:30px;"> The API should be declarative enough
+          for quick buiness changes, but not at the cost of performane.</p>
+        <p class="fragment" align="left" style="font-size:30px"> Maximum <span
+            style="font-weight:800;color:red;">optimisations</span>, which is otherwise <span
+            style="font-weight:800;color:red;">impossible</span>
+          with handwritten language of data-source.
+        </p>
+        <p class="fragment" align="left" style="font-size:30px;color: black;"> It should be easily
+          <span style="font-weight:800;color:red;">fairly backend agnostic, testable and backed with laws.</span></p>
       </section>
 
       <!--Slide -->
