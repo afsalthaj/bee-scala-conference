@@ -350,7 +350,7 @@
         </section>
 
         <section data-transition="fade-out">
-          <h5>Sequence ??? </h5>
+          <h3>Sequence ??? </h3>
           <pre><code class="hljs scala" style="font-size:19px;" data-trim>
               def sequence[D, E, A](list: List[FeatureGen[D, E, A]]): FeatureGen[D, E, List[A]] = 
                 list.foldLeft(pure[List[A]](Nil))((aa, bb) => bb.map2(aa)(_ :: _))
@@ -362,7 +362,7 @@
 
         <!--Sections grouped together; Start-->
         <section data-transition="fade-out">
-          <h5>Once the features are defined we get to compose them in many ways.</h5>
+          <h3>Composing things....</h3>
           <pre><code class=" hljs scala" style="font-size:24px; align-items: center;" data-line-numbers="1000" data-trim data-noescape>  
               val aJob: FeatureGen[FeatureResult[D]] = 
                 start(defn)
