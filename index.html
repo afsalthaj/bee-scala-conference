@@ -285,69 +285,17 @@
       </section>
 
       <section>
-        <h3> Probably, We need something along the lines of</h3>
+        <h3> We need to compose them.</h3>
+        We need more combinators. But to begin with,
         <pre><code class=" hljs scala" style="font-size:22px;" data-trim data-line-numbers="1-100">
-          val list: List[FeatureDef[D]] = ???
-
           def start(featureDef: FeatureDef[D]): FeatureGen[FeatureRes[D]] = ???
 
-          start(defn) join start(defn2)
-          
-          def collectAll[A](list: List[FeatureGen[D, Expr, A]]): FeatureGen[List[FeatureRes[D]]] =
-            sequence(list.map(start))
+          final case class FeatureRes[D](result: D, metadata: Metadata)
+          final case class Metadata(name: FeatureName, source: Vector[String])
           </code></pre>
+
+        We will enrich/re-visit this soon!
       </section>
-      <section>
-        <h6>Where, FeatureRes is,</h6>
-        <pre><code class=" hljs scala" style="font-size:22px;" data-trim data-line-numbers="1-100">
-        final case class FeatureRes[D](result: D, metadata: Metadata)
-        final case class Metadata(name: FeatureName, source: Vector[String])
-      </code></pre>
-
-      </section>
-
-      <!-- Slide 5 -->
-
-
-      <!-- Slide 5 -->
-
-      <section data-background="images/ZIO.png" data-state="dimbg">
-        <h2>We are using ZIO</h2>
-        <ul>
-          <li>Relatively easy to pick up</li>
-          <li>No implicit schedule/timer</li>
-          <li>Easy concurrrency</li>
-          <li>Awesome type inference</li>
-        </ul>
-      </section>
-
-      <!-- Slide 6 -->
-
-      <section data-background="images/ZIO.png" data-state="dimbg">
-        <h2> The mental model of ZIO </h2>
-        <div>
-          <pre><code class="hljs scala" data-trim>
-                  ...
-  
-                    ZIO[R, E, A]
-                    // ZIO[Environment, Error, Result]
-                  ...
-             </code></pre>
-
-        </div>
-        <div>
-          <pre><code class="hljs scala" data-trim>
-                  ...
-  
-                    R => Either[E, A]
-  
-                    // Given an input R,
-                    // the computation either returns an Error or a result A.
-                  ...
-              </code></pre>
-        </div>
-      </section>
-
 
       <!-- Slide 8 -->
 
@@ -413,22 +361,150 @@
           <pre><code class="hljs scala" style="font-size:19px;" data-trim>
               def sequence[D, E, A](list: List[FeatureGen[D, E, A]]): FeatureGen[D, E, List[A]] = 
                 list.foldLeft(pure[List[A]](Nil))((aa, bb) => bb.map2(aa)(_ :: _))
+
+              def collectAll(list: List[FeatureGen[D, E, A]]): FeatureGen[D, E, List[A]] = 
+                sequence(list)  
             </code></pre>
         </section>
-        <section>
+
+        <!--Sections grouped together; Start-->
+        <section data-transition="fade-out">
           <h5>Once the features are defined we get to compose them in many ways.</h5>
-          <pre><code class=" hljs scala" style="font-size:30px; align-items: center;" data-trim data-noescape>
-              val defn = start(defn2).join(start(defn2))
-              val job2 = start(defn3).join(start(defn4))
-              val job3 = job1.join(job2).join(job3)
-              FeatureGen.sequence(job1.join(job2).join(job3), job4, job5)
-              job1.map(res => if (res.metadata.isEmpty) None else Some(res))
-              FeatureGen.combineAll(aBigListThatFormedSomehow)
+          <pre><code class=" hljs scala" style="font-size:24px; align-items: center;" data-line-numbers="1000" data-trim data-noescape>  
+              val aJob: FeatureGen[FeatureResult[D]] = 
+                start(defn)
+
+              val result = FeatureGen.collectAll(job1.join(job2).join(job3), job4, job5)    
+              
+              val anotherResult = FeatureGen.combineAll(List(job6, job7, job8, jb9))
+
+              anotherResult.map(_.metadata.size)
+
+              // and so forth
+
               </code></pre>
         </section>
+
+        <section data-transition="fade-out">
+          <h5>Once the features are defined we get to compose them in many ways.</h5>
+          <pre><code class=" hljs scala" style="font-size:24px; align-items: center;" data-line-numbers="1,2" data-trim data-noescape>  
+                val aJob: FeatureGen[FeatureResult[D]] = 
+                  start(aJob)
+  
+                val result = FeatureGen.collectAll(job1.join(job2).join(job3), job4, job5)    
+                
+                val anotherResult = FeatureGen.combineAll(List(job6, job7, job8, jb9))
+  
+                anotherResult.map(_.metadata.size)
+  
+                // and so forth
+  
+                </code></pre>
+        </section>
+
+        <section data-transition="fade-out">
+          <h5>Once the features are defined we get to compose them in many ways.</h5>
+          <pre><code class=" hljs scala" style="font-size:24px; align-items: center;" data-line-numbers="4" data-trim data-noescape>  
+                  val aJob: FeatureGen[FeatureResult[D]] = 
+                    start(aJob)
+    
+                  val result = FeatureGen.collectAll(job1.join(job2).join(job3), job4, job5)    
+                  
+                  val anotherResult = FeatureGen.combineAll(List(job6, job7, job8, jb9))
+    
+                  anotherResult.map(_.metadata.size)
+    
+                  // and so forth
+    
+                  </code></pre>
+        </section>
+
+        <section data-transition="fade-out">
+          <h5>Once the features are defined we get to compose them in many ways.</h5>
+          <pre><code class=" hljs scala" style="font-size:24px; align-items: center;" data-line-numbers="6" data-trim data-noescape>  
+                    val aJob: FeatureGen[FeatureResult[D]] = 
+                      start(aJob)
+      
+                    val result = FeatureGen.collectAll(job1.join(job2).join(job3), job4, job5)    
+                    
+                    val anotherResult = FeatureGen.combineAll(List(job6, job7, job8, jb9))
+      
+                    anotherResult.map(_.metadata.size)
+      
+                    // and so forth
+      
+                    </code></pre>
+        </section>
+
+        <section data-transition="fade-out">
+          <h5>Once the features are defined we get to compose them in many ways.</h5>
+          <pre><code class=" hljs scala" style="font-size:24px; align-items: center;" data-line-numbers="8,9,10" data-trim data-noescape>  
+                      val aJob: FeatureGen[FeatureResult[D]] = 
+                        start(aJob)
+        
+                      val result = FeatureGen.collectAll(job1.join(job2).join(job3), job4, job5)    
+                      
+                      val anotherResult = FeatureGen.combineAll(List(job6, job7, job8, jb9))
+        
+                      anotherResult.map(_.metadata.size)
+        
+                      // and so forth
+        
+                      </code></pre>
+        </section>
+
+        <!--Sections grouped together; Start-->
+
+        <!-- Slide 5 -->
+
         <section>
-          <h2>A one-time implementation to ZIO</h2>
-          <p style="font-size: 24px;">For this, you need a richer target effect system </p>
+          <h2>Run <span style="color: red;">FeatureGen</span></h2>
+          <ul>
+            <li>We can have a single implementation to target effect that can deal with side effects</li>
+            <li>For that we need an effect that's richer with types!</li>
+            <li>In other words, we can't keep traversing through FeatureGen to plug new backends/test-services</li>
+          </ul>
+        </section>
+
+        <section data-background="images/ZIO.png" data-state="dimbg">
+          <h2>Going forward, We are using ZIO</h2>
+          <ul>
+            <li>Relatively easy to pick up</li>
+            <li>No implicit schedule/timer</li>
+            <li>Easy concurrrency</li>
+            <li>Awesome type inference</li>
+          </ul>
+        </section>
+
+        <!-- Slide 6 -->
+        <section data-background="images/ZIO.png" data-state="dimbg">
+          <h2> The mental model of ZIO </h2>
+          <div>
+            <pre><code class="hljs scala" data-trim>
+                  ...
+  
+                    ZIO[R, E, A]
+                    // ZIO[Environment, Error, Result]
+                  ...
+             </code></pre>
+
+          </div>
+          <div>
+            <pre><code class="hljs scala" data-trim>
+                  ...
+  
+                    R => Either[E, A]
+  
+                    // Given an input R,
+                    // the computation either returns an Error or a result A.
+                  ...
+              </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Run implementation of ZIO</h2>
+          <p style="font-size: 24px;">We need a richer target to not deal with recursion more than once! </p>
           <pre><code class=" hljs scala" style="font-size:30px; align-items: center;" data-trim data-noescape>
             <span style="text-align: center;"> ZIO[DataService[D, Expr], AppError, A] </span>
             </code></pre>
@@ -440,7 +516,7 @@
         </section>
         <section>
           <h6> Interpreting any FeatureGen[D, Expr, A] to ZIO</h6>
-          <pre><code class="hljs scala" style="font-size:19px;" data-trim>
+          <pre><code class="hljs scala" style="font-size:19px;">
               def run[D, Expr, A] = FeatureGen[D, Expr, A]) => AnalyticsTask[A]
              </code></pre>
         </section>
@@ -456,17 +532,18 @@
               </code></pre>
         </section>
         <section>
-          <h2>A once-off written run function</h2>
+          <h2>Let's write this one out!</h2>
           <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="1-10" data-trim>
-        def run[D, Expr, A] = fa =>
-          def apply[A](fa: FeatureGen[D, Expr, A]): AnalyticsTask[A] = {
-            fa match {
-              case Pure(value)      => ZIO.succeed(value)
-              case Zip(pgm1, pgm2)  => apply(pgm1).zip(apply(pgm2))
-              case Map(pgm, f)      => apply(pgm).map(f)
-              case Fail(message)    => ZIO.fail(new AppError(message))
-            ... // In next slides
-            }
+        def run[D, Expr, A]: FeatureGen[D, Expr, A] => AnalyticsTask[A] = 
+          fa =>
+            def apply[A](fa: FeatureGen[D, Expr, A]): AnalyticsTask[A] = {
+              fa match {
+                case Pure(value)      => ZIO.succeed(value)
+                case Zip(pgm1, pgm2)  => apply(pgm1).zip(apply(pgm2))
+                case Map(pgm, f)      => apply(pgm).map(f)
+                case Fail(message)    => ZIO.fail(new AppError(message))
+                ... // In next slides
+              }
 
           apply(fa)
         }
