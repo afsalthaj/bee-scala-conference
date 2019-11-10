@@ -100,6 +100,11 @@
           total account transactions for a customer in last 3 weeks </p>
         <p class="fragment" align="left" style="font-size:30px"> Expose a light weight interface just to quickly add new
           business logic. </p>
+        <p class="fragment" align="left" style="font-size:30px"> The interface should not be at the cost of efficiency.
+        </p>
+        <p class="fragment" align="left" style="font-size:30px"> Maximum optimisations, which is otherwise impossible
+          with handwritten language of data-source.
+        </p>
         <p class="fragment" align="left" style="font-size:30px"> Expose a thin API to compose those features to form a
           wide table </p>
         <p class="fragment" align="left" style="font-size:30px"> And We have tens of hundreds of such wide tables having
@@ -110,28 +115,17 @@
         </p>
       </section>
       <section>
-        <p align="left" style="font-size:30px;color: coral;"> That is a thin layer of interface to
-          <span style="font-weight:800;color:black;">declaratively</span>
+        <h3>To sum up the requirements</h3>
+        <p align="left" style="font-size:30px;color: black;"> That is a thin layer of interface to
+          <span style="font-weight:800;color:red;">declaratively</span>
           define <span style="font-weight:900;color:black;">clear and concise</span> business logic - <span
-            style="font-weight:900;color:black;">uncluttered</span> with
-          <span style="font-weight: 900;color:black;">performance related details</span> </p>
-        <p class="fragment" align="left" style="font-size:30px;color: coral;"> Accompanied by an API that allows you to
-          <span style="font-weight:800;color:black;">compose</span>
+            style="font-weight:900;color:red;">uncluttered</span> with
+          <span style="font-weight: 900;color:red;">performance related details</span> </p>
+        <p class="fragment" align="left" style="font-size:30px;color: black;"> Accompanied by an API that allows you to
+          <span style="font-weight:800;color:red;">compose</span>
           them. </p>
-      </section>
-      <section>
-        <h2>While, these are not just after-thoughts</h2>
-        <ul>
-          <li class="fragment" style="font-size:30px">Quickly fix performance hiccups.</li>
-          <li class="fragment" style="font-size:30px">Error channels.</li>
-          <li class="fragment" style="font-size:30px">Quick fixes of imperative systems</li>
-          <li class="fragment" style="font-size:30px">Backend agnostic - atleast to some extent</li>
-          <li class="fragment" style="font-size:30px">Testability</li>
-          <li class="fragment" style="font-size:30px">Quick addition of new features / logic</li>
-          <li class="fragment" style="font-size:30px">Resource safety</li>
-          <li class="fragment" style="font-size:30px">AOP style logging</li>
-          <li class="fragment" style="font-size:30px">All of them should compose ...</li>
-        </ul>
+        <p class="fragment" align="left" style="font-size:30px;color: red;"> The program should allow (more and quick
+          fixes for) optimisations </p>
       </section>
 
       <!--Slide -->
