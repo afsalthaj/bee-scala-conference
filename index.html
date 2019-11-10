@@ -1063,10 +1063,14 @@
 
       <section>
         <h2> Let's run again.</h2>
+        <pre><code class="hljs scala" style="font-size:19px;" data-trim data-noescape>
+
         def newImpl(
         impl: FeatureGen[D, Expr, A] => AnalyticsTask[D, Expr, A]
         ): FeatureGen[D, Expr, A] => AnalyticsTask[D, Expr, A] =
         fa => optimise(listOfFeatureGen(fa), fa)
+      </code></pre>
+
       </section>
 
       <!-- Slide -->
