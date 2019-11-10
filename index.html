@@ -289,22 +289,17 @@
         <pre><code class=" hljs scala" style="font-size:22px;" data-trim data-line-numbers="1-100">
           val list: List[FeatureDef[D]] = ???
 
-          def start(featureDef: FeatureDef[D]): FeatureGen[FeatureResult[D]] = ???
+          def start(featureDef: FeatureDef[D]): FeatureGen[FeatureRes[D]] = ???
 
-          def run[A](list: List[FeatureGen[D, Expr, A]]): FeatureGen[List[FeatureRes[D]]] =
+          start(defn) join start(defn2)
+          
+          def collectAll[A](list: List[FeatureGen[D, Expr, A]]): FeatureGen[List[FeatureRes[D]]] =
             sequence(list.map(start))
-
-          val job: FeatureGen[List[D] = 
-            features.flatMap(regressionModel.train)
-
           </code></pre>
-
       </section>
       <section>
-        <h6>Where, FeatureResult is,</h6>
+        <h6>Where, FeatureRes is,</h6>
         <pre><code class=" hljs scala" style="font-size:22px;" data-trim data-line-numbers="1-100">
-
-        // Given
         final case class FeatureRes[D](result: D, metadata: Metadata)
         final case class Metadata(name: FeatureName, source: Vector[String])
       </code></pre>
@@ -316,19 +311,19 @@
 
       <!-- Slide 5 -->
 
-      <section>
-        <h2>Eyes on:</h2>
+      <section data-background="images/ZIO.png" data-state="dimbg">
+        <h2>We are using ZIO</h2>
         <ul>
-          <li>Effects: ZIO</li>
-          <li>Semigroup</li>
-          <li>Natural Transformation: The impl of abstraction into ZIO</li>
+          <li>Relatively easy to pick up</li>
+          <li>No implicit schedule/timer</li>
+          <li>Easy concurrrency</li>
+          <li>Awesome type inference</li>
         </ul>
-        <p>We use ZIO for a variety of reasons.</p>
       </section>
 
       <!-- Slide 6 -->
 
-      <section>
+      <section data-background="images/ZIO.png" data-state="dimbg">
         <h2> The mental model of ZIO </h2>
         <div>
           <pre><code class="hljs scala" data-trim>
@@ -382,8 +377,8 @@
         </section>
         <section>
           <pre><code class="hljs scala" style="font-size:19px;">
-  final case class Pure[A](value: A) extends FeatureGen[Nothing, Nothing, A] 
-  final case class Zip[D, E, A, B](f: FeatureGen[D, E, A], g: FeatureGen[D, E, B])
+  final case class Pure[A](value: A) extends FeatureGen[Nothing, Nothing, A]
+  final case class Zip[D, E, A, B](f: FeatureGen[D, E, A], g: FeatureGen[D, E, B]) extends FeatureGen[D, Expr, (A, B)]
   final case class Map[D, E, A, B](feature1: FeatureGen[D, E, A], f: A => B) extends FeatureGen[D, E, B]
   final case class CreateFeatures[D, E](input: FeatureDef[D, E]) extends FeatureGen[D, E, FeatureRes[D]]
   final case class JoinFeatures[D, E](
@@ -405,10 +400,14 @@
           def fail[A](message: String): FeatureGen[Nothing, Nothing, A] =
             FeatureGen.Fail(message)
 
-          def sequence[D, Expr, A](list: List[FeatureGen[D, Expr, A]]): FeatureGen[D, Expr, List[A]] = ???
-        </code></pre>
+          def join[D, Expr,](f1: FeatureGen[D, Expr, FeatureRes[D]], f2: FeatureGen[D, Expr, FeatureRes[D]]): FeatureGen[D, Expr, A] =
+            FeatureGen.Join(f1, f2)
 
+          def combineAll[D, Expr. A](list: ::[FeatureGen[D, Expr, FeatureRes[D]]]): FeatureGen[D, Expr, FeatureRes[D]] = 
+            list.reduce(a, b => join(a, b))          
+        </code></pre>
         </section>
+
         <section data-transition="fade-out">
           <h5>Sequence ??? </h5>
           <pre><code class="hljs scala" style="font-size:19px;" data-trim>
@@ -417,41 +416,49 @@
             </code></pre>
         </section>
         <section>
+          <h5>Once the features are defined we get to compose them in many ways.</h5>
+          <pre><code class=" hljs scala" style="font-size:30px; align-items: center;" data-trim data-noescape>
+              val defn = start(defn2).join(start(defn2))
+              val job2 = start(defn3).join(start(defn4))
+              val job3 = job1.join(job2).join(job3)
+              FeatureGen.sequence(job1.join(job2).join(job3), job4, job5)
+              job1.map(res => if (res.metadata.isEmpty) None else Some(res))
+              FeatureGen.combineAll(aBigListThatFormedSomehow)
+              </code></pre>
+        </section>
+        <section>
           <h2>A one-time implementation to ZIO</h2>
-          <p style="font-size: 24px;">For this you need a richer target effect system </p>
+          <p style="font-size: 24px;">For this, you need a richer target effect system </p>
           <pre><code class=" hljs scala" style="font-size:30px; align-items: center;" data-trim data-noescape>
             <span style="text-align: center;"> ZIO[DataService[D, Expr], AppError, A] </span>
             </code></pre>
-          <p style="font-size: 24px;">Were, DataService knows about how to do basic ops on data on how to read and
-            write given a data D.</p>
+          <p style="font-size: 24px;">Were, DataService knows about how to do basic ops on data.</p>
         </section>
         <section>
           <p> For readability</p>
           <pre><code class="hljs scala" style="font-size:19px;" data-trim>type AnalyticsTask[D, Expr, A] = ZIO[DataService[D, Expr], AppError, A]</code></pre>
         </section>
         <section>
-          <h6> An implementation is;</h6>
+          <h6> Interpreting any FeatureGen[D, Expr, A] to ZIO</h6>
           <pre><code class="hljs scala" style="font-size:19px;" data-trim>
-              def impl[D, Expr, A] = FeatureGen[D, Expr, A]) => AnalyticsTask[A]
+              def run[D, Expr, A] = FeatureGen[D, Expr, A]) => AnalyticsTask[A]
              </code></pre>
         </section>
         <section>
-          <h3>An Application Specific DataService.</h3>
+          <h3>Let's look at what's in DataService</h3>
           <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="1-10" data-trim>
             trait DataService[D, Expr] {
               def get(input: Input[D], partition: Option[Window]): Task[D]
               def generateFeature(d: D, featureRequest: FeatureDef[D, Expr]): Task[D]
               def join(left: D, right: D): Task[D]
-              def convertFeature(value: FeatureName): Expr
               def projectFeatures(d: D, value: List[Logic[Expr]]): Task[D]
             }
               </code></pre>
         </section>
-
         <section>
-          <h2>A one-time written implementation to ZIO</h2>
+          <h2>A once-off written run function</h2>
           <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="1-10" data-trim>
-        def impl[D, Expr, A] = fa =>
+        def run[D, Expr, A] = fa =>
           def apply[A](fa: FeatureGen[D, Expr, A]): AnalyticsTask[A] = {
             fa match {
               case Pure(value)      => ZIO.succeed(value)
@@ -496,8 +503,92 @@
         </section>
         <section>
           <h6>Let's run, for that we need an implementation. Let' go with Flink</h6>
+          For that, we need to implement a Flink DataService, which is in real a 15 line code.
+          <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="1-10" data-trim>
+              val flinkSerive = new DataService[flink.Table, flink.Expression] {
+                def get(input: Input[D], partition: Option[TimeWindow]): Task[Table] = ???
+                def generateFeature(d: Table, featureRequest: FeatureDef[Table, Expression]): Task[Table] = ???
+                def join(left: Table, right: Table): Task[Table] = ???
+                def projectFeatures(d: D, value: List[Logic[Expression]]): Task[Table] = ????
+              }
+            </code></pre>
+        </section>
+        <section>
+          <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="1-10" data-trim>
+            val job: FeatureGen[Table, Expression] = ???
+            run(job).provide(flinkService)
+              </code></pre>
+        </section>
+        <section>
+          <h2>Let's define the set of features !</h2>
+          <pre><code class="hljs scala" style="font-size:22px;" data-trim data-line-numbers="1-100" data-noescape>
+                List(
+                  FeatureDef(
+                    const(table),
+                    'accountBalance.sum,
+                    "sum_account_balance",
+                    0 ~ 2 weeks
+                  ),
+                  FeatureDef(
+                    const(table),
+                    'accountBalance.max,
+                    "max_account_balance",
+                    0 ~ 2 weeks
+                  ),
+                  FeatureDef(
+                    const(table),
+                    'accountBalance.sum,
+                    "sum_account_balance",
+                    2 ~ 4 weeks
+                  ),
+                  FeatureDef(
+                    const(table),
+                    'accountBalance.max,
+                    "max_account_balance",
+                    2 ~ 4 weeks
+                  ),
+                  FeatureDef(
+                    const(table),
+                    'accountBalance.sum,
+                    "sum_account_balance",
+                    0 ~ 4 weeks,
+                    Some((a: Expression, b: Expression) => a + b)
+                  ),
+                  FeatureDef(
+                    const(table),
+                    'accountBalance.max,
+                    "max_account_balance",
+                    0 ~ 4 weeks,
+                    Some((a: Expression, b: Expression) => (a > b) ? (a, b))
+                  )
+                              </code></pre>
 
         </section>
+        <section>
+          <h4>Without Any Optimiser</h4>
+          <video width="1000" height="680" controls>
+            <source src="images/fully_unoptimised.mov" type="video/mp4">
+          </video>
+        </section>
+
+
+        <section>
+          <h4>We hit the first real world.</h4>
+          That is worst in all sense, but the most important one is, the joins are sequential.
+        </section>
+
+        <!-- Slide -->
+        <section>
+          <h4> A Simplified version. </h4>
+          <img src="images/worst.png" width=1000 style="border: none;">
+        </section>
+
+        <!--Slide-->
+        <section>
+          <h4> Can our abstraction solve this ?</h4>
+        </section>
+
+
       </section>
 
       <!-- Slide 9 -->
