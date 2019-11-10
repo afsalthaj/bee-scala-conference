@@ -497,11 +497,13 @@
 
         <section>
           <h2>Run implementation of ZIO</h2>
-          <p style="font-size: 24px;">We need a richer target to not deal with recursion more than once! </p>
+          <p style="font-size: 20px;">We need a richer target to not deal with recursion more than once! </p>
           <pre><code class=" hljs scala" style="font-size:30px; align-items: center;" data-trim data-noescape>
-            <span style="text-align: center;"> type AnalyticsTask[D, Expr, A] = ZIO[DataService[D, Expr], AppError, A] </span>
+            <span style="text-align: center;"> 
+              type AnalyticsTask[D, Expr, A] = ZIO[DataService[D, Expr], AppError, A] 
+            </span>
             </code></pre>
-          <p style="font-size: 24px;">Were, DataService knows about how to do basic ops on data.</p>
+          <p style="font-size: 20px;">Were, DataService knows about how to do basic ops on data.</p>
         </section>
         <section>
           <h6> Interpreting any FeatureGen[D, Expr, A] to AnalyticsTask</h6>
