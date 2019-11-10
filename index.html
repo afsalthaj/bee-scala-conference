@@ -497,22 +497,16 @@
 
         <section>
           <h2>Run implementation of ZIO</h2>
-          <p style="font-size: 20px;">We need a richer target to not deal with recursion more than once! </p>
-          <pre><code class=" hljs scala" style="font-size:30px; align-items: center;" data-trim data-noescape>
-            <span style="text-align: center;"> 
+          <p style="font-size: 22px;">We need a richer target to not deal with recursion more than once! </p>
+          <pre><code class=" hljs scala" style="font-size:26px; align-items: center;" data-trim data-noescape>
               type AnalyticsTask[D, Expr, A] = ZIO[DataService[D, Expr], AppError, A] 
-            </span>
-            </code></pre>
-          <p style="font-size: 20px;">Were, DataService knows about how to do basic ops on data.</p>
-        </section>
-        <section>
-          <h6> Interpreting any FeatureGen[D, Expr, A] to AnalyticsTask</h6>
-          <pre><code class="hljs scala" style="font-size:19px;">
+
               def run[D, Expr, A] = FeatureGen[D, Expr, A]) => AnalyticsTask[A]
-             </code></pre>
+
+            </code></pre>
         </section>
         <section>
-          <h3>Let's look at what's in DataService</h3>
+          <h3>Where, DataService knows about basics ops,</h3>
           <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="1-10" data-trim>
             trait DataService[D, Expr] {
               def get(input: Input[D], partition: Option[Window]): Task[D]
@@ -570,8 +564,8 @@
           </code></pre>
         </section>
         <section>
-          <h6>Let's run, for that we need an implementation. Let' go with Flink</h6>
-          For that, we need to implement a Flink DataService, which is in real a 15 line code.
+          <h3>Let' kick this off with Flink</h3>
+          <p>A Flink DataService, which is only a 12 line code.</p>
           <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="1-10" data-trim>
               val flinkSerive = new DataService[flink.Table, flink.Expression] {
                 def get(input: Input[D], partition: Option[TimeWindow]): Task[Table] = ???
@@ -582,9 +576,12 @@
             </code></pre>
         </section>
         <section>
-          <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="1-10" data-trim>
+          <h3>And Running them is as easy as!</h3>
+
+          <pre><code class="hljs scala" style="font-size:25px;" data-line-numbers="1-10" data-trim>
             val job: FeatureGen[Table, Expression] = ???
             run(job).provide(flinkService)
+
               </code></pre>
         </section>
         <section>
@@ -641,13 +638,14 @@
 
 
         <section>
-          <h4>We hit the first real world.</h4>
-          That is worst in all sense, but the most important one is, the joins are sequential.
+          <h3>We hit the first real world.</h3>
+          <p>An execution plan that is worst in all sense.</p>
+          <p> We saw, joins are sequential. </p>
         </section>
 
         <!-- Slide -->
         <section>
-          <h4> A Simplified version. </h4>
+          <h3> A Simplified version. </h3>
           <img src="images/worst.png" width=1000 style="border: none;">
         </section>
 
