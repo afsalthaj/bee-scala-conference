@@ -39,11 +39,11 @@
       <!-- Slide 2 -->
       <section>
         <h2>Why FP in Scala can make it hard ?</h2>
-        <p>For an application code, should I be dealing with: </p>
+        <p>At an application code level, should I be always dealing with: </p>
         <ul style="font-size:35px">
-          <li>Magical implicits.</li>
           <li>Free structures with boiler-plates</li>
-          <li>Lifting error types everywhere - yes, type inference.</li>
+          <li>Implicits.</li>
+          <li>Narrowing and Widening of types - Type inference.</li>
           <li>Typeclass specialisations.</li>
           <li>Relatively complex code design and larger surface area</li>
         </ul>
@@ -59,11 +59,10 @@
       <section>
         <h2>Sticking to fundamentals is the key</h2>
         <ul>
-          <li>Total functions</li>
-          <li>Programs as descriptions.</li>
           <li>Referential transparency.</li>
+          <li>Total functions</li>
+          <li>Lawful structures - descriptions</li>
           <li>Type driven development.</li>
-          <li>Testability / Lawful / Less bugs</li>
         </ul>
         <p> Result is,
           <strike style='color:maroon'> slower </strike> <span style='color:green'> faster </span> development of
@@ -74,41 +73,40 @@
       <!--Slide -->
 
       <section>
-        <h3>Possible, if we have a proper encoding of our application domain.</h3>
+        <h3>Possible, if we have a proper structure or encoding of our application domain.</h3>
       </section>
       <!-- Slide -->
 
       <section>
         <h3 class="fragment grow">Let us write FP for a Bigdata problem </h3>
         <h6 class="fragment">Handling REAL WORLD requirements. </h6>
-        <h6 class="fragment">And finish off development fairly quickly - we have say 3 months</h6>
         <br>
       </section>
 
       <!-- Slide -->
 
       <section id="fragments">
-        <h2>The problem statement</h2>
+        <h2>Problem - Context</h2>
         <h6>We have billions of events of customers clicking your netbank app.</h6>
         <h6>We have millions of customer account data.</h6>
         <h6>We have millions of payment datasets.</h6>
         <h6>We use all of it to do business analysis and machine learning.</h6>
       </section>
       <section>
-        <p align="left" style="font-size:30px"> Keep finding attributes of customers from these big amount of datasets.
-          We call them "Features".
+        <h2>Problem - Requirements</h2>
+        <p align="left" style="font-size:30px"> We need to find attributes of customers from big-data.
+          We call them <i>"Features".</i>
           Ex:
-          total transactions in last 3 weeks </p>
-        <p class="fragment" align="left" style="font-size:30px"> Join 1000s of them to form a wide table </p>
-        <p class="fragment" align="left" style="font-size:30px"> We have tens of hundreds of such wide tables.
+          total account transactions for a customer in last 3 weeks </p>
+        <p class="fragment" align="left" style="font-size:30px"> Expose a light weight interface just to quickly add new
+          business logic. </p>
+        <p class="fragment" align="left" style="font-size:30px"> Expose a thin API to compose those features to form a
+          wide table </p>
+        <p class="fragment" align="left" style="font-size:30px"> And We have tens of hundreds of such wide tables having
+          possibly with features reused.
         </p>
-        <p class="fragment" align="left" style="font-size:30px"> Group/Feed them to ML training models
-        </p>
-        <p class="fragment" align="left" style="font-size:30px"> We need maximum maintainbility of this huge number of
-          applications.
-        </p>
-        <p class="fragment" align="left" style="font-size:30px"> Constantly changing business logic - Add / Update /
-          Remove
+        <p class="fragment" align="left" style="font-size:30px"> Possibly, we may feed them to ML training models at a
+          later stage.
         </p>
       </section>
       <section>
