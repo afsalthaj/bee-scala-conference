@@ -44,10 +44,9 @@
           <li>Dealing with free structures with boiler-plates</li>
           <li>Get hit with a ton of jargon and theory</li>
           <li>Implicits.</li>
-          <li>In a lost state of possibly many solutions.</li>
           <li>Type inference.</li>
           <li>Early specialisations to standard type classes.</li>
-          <li>Relatively complex code design and very large surface area</li>
+          <li>In a lost state of possibly many solutions.</li>
         </ul>
         <p style="font-size:35px">Result is,
           <span style='color:maroon'> slower </span> development of
@@ -89,7 +88,7 @@
 
       <section id="fragments">
         <h2>Problem - Context</h2>
-        <h6>We have billions of events of customers clicking your netbank app.</h6>
+        <h6>We have billions of events as clickstream of customers hitting banking applications.</h6>
         <h6>We have millions of customer account data.</h6>
         <h6>We have millions of payment datasets.</h6>
         <h6>We use all of it to do business analysis and machine learning.</h6>
@@ -98,11 +97,11 @@
         <h2>Problem - Requirements</h2>
         <p align="left" style="font-size:30px"> We need to find attributes of customers from big-data.
           We call them <i>"Features".</i>
-          Ex:
+          Example:
           total account transactions for a customer in last 3 weeks </p>
         <p class="fragment" align="left" style="font-size:30px"> Expose a light weight interface just to quickly add new
           business logic. </p>
-        <p class="fragment" align="left" style="font-size:30px"> Expose a thin API to compose/group them to
+        <p class="fragment" align="left" style="font-size:30px"> Expose a thin API to compose them further to
           form a wide table of features. </p>
         <p class="fragment" align="left" style="font-size:30px"> We further compose them to form tens of hundreds of
           such wide tables, possibly with features reused across them.
@@ -121,12 +120,12 @@
 
         <p class="fragment" align="left" style="font-size:30px;"> The API should be declarative enough
           for quick buiness changes, but not at the cost of performane.</p>
-        <p class="fragment" align="left" style="font-size:30px"> Maximum <span
+        <p class="fragment" align="left" style="font-size:30px"><span
             style="font-weight:800;color:red;">optimisations</span>, which is otherwise <span
             style="font-weight:800;color:red;">impossible</span>
           with handwritten language of data-source.
         </p>
-        <p class="fragment" align="left" style="font-size:30px;color: black;"> It should be easily
+        <p class="fragment" align="left" style="font-size:30px;color: black;"> It should be
           <span style="font-weight:800;color:red;">fairly backend agnostic, testable and backed with laws.</span></p>
       </section>
 
