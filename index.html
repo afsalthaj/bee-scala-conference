@@ -108,24 +108,26 @@
       </section>
       <section>
         <h3>What does that mean for us?</h3>
-        <p align="left" style="font-size:30px;color: black;"> Need a thin layer of interface to
+        <p class="fragment fade-in-then-semi-out" align="left" style="font-size:30px;color: black;"> Need a thin layer
+          of interface to
           <span style="font-weight:900;color:red;">declaratively</span>
           define <span style="font-weight:900;color:red;">clear and concise</span> business logic / features - <span
             style="font-weight:900;color:red;">uncluttered</span> with
           <span style="font-weight: 900;color:red;">performance optimisations</span> </p>
-        <p class="fragment" align="left" style="font-size:30px;color: black;"> Accompanied by an API that allows you to
+        <p class="fragment fade-in-then-semi-out" align="left" style="font-size:30px;color: black;"> Accompanied by an
+          API that allows you to
           <span style="font-weight:800;color:red;">compose</span>
           the logic</p>
 
-        <p class="fragment" align="left" style="font-size:30px;"> Declarative, but <span
+        <p class="fragment fade-in-then-semi-out" align="left" style="font-size:30px;"> Declarative, but <span
             style="font-weight:800;color:red;"> not </span> at the cost of <span style="font-weight:800;color:red;">
             performance </span>.</p>
-        <p class="fragment" align="left" style="font-size:30px"><span
+        <p class="fragment fade-in-then-semi-out" align="left" style="font-size:30px"><span
             style="font-weight:800;color:red;">Optimisations</span>, which is otherwise <span
             style="font-weight:800;color:red;">complex</span>
           with handwritten language of data-source.
         </p>
-        <p class="fragment" align="left" style="font-size:30px;color: black;"> It should be
+        <p class="fragment fade-in-then-semi-out" align="left" style="font-size:30px;color: black;"> It should be
           <span style="font-weight:800;color:red;">fairly backend agnostic, testable and backed with laws.</span></p>
       </section>
 
@@ -225,14 +227,14 @@
       <!-- Slide -->
       <section data-transition="fade-out">
         <h2>Let's express this in Scala</h2>
-        <pre><code class="hljs scala" style="font-size:28px;" data-trim data-line-numbers="1-6">
+        <pre><code class="hljs scala" style="font-size:28px;">
           
           final case class FeatureDef[D, Expr](
             inp: Input[D], 
             op: Expr, 
             name: String, 
             partition: TimeWindow
-        )
+          )
         
         </code></pre>
 
@@ -273,7 +275,7 @@
 
       <!--Slide-->
       <section data-transition="fade-out">
-        <h3>With a complex input.</h3>
+        <h2>With a complex input.</h2>
         <pre><code class="hljs scala"  style="font-size:28px;" data-trim data-line-numbers="2,3">
             FeatureDef(
               dir("input_table").join(dir("another_table"))
@@ -288,8 +290,8 @@
       <!-- Slide 7 -->
 
       <section>
-        <h6>And we can have a list of them</h6>
-        <pre><code class="hljs scala" style="font-size:22px;" data-trim data-line-numbers="1-10" data-noescape>
+        <h2>And we can have a list of them</h2>
+        <pre><code class="hljs scala" style="font-size:28px;" data-trim data-line-numbers="1-10" data-noescape>
           List(
             FeatureDef(dir("account"), sum(acc_bal)..),
             FeatureDef(dir("payments"), sum(debit).when(country == 'aus')..),
@@ -303,7 +305,7 @@
       <!-- Slide 5 -->
 
       <section>
-        <h3>Primitives and Combinators</h3>
+        <h2>And we need to compose them</h2>
         <h6>To begin with,</h6>
         <pre><code class=" hljs scala" style="font-size:22px;" data-trim data-line-numbers="1-100">
             def start(featureDef: FeatureDef[D]): FeatureGen[FeatureRes[D]] = ???
@@ -342,7 +344,7 @@
       <section>
         <h2> Representation </h2>
 
-        <pre><code class="hljs scala" style="font-size:20px;">
+        <pre><code class="hljs scala" style="font-size:23px;">
   final case class Pure[A](value: A) extends FeatureGen[Nothing, Nothing, A]
   
   final case class Zip[D, E, A, B](f: FeatureGen[D, E, A], g: FeatureGen[D, E, B]) 
@@ -361,8 +363,8 @@
             </code></pre>
       </section>
       <section>
-        <h3>Our helper functions</h3>
-        <pre><code class="hljs scala" style="font-size:22px;" data-trim>
+        <h2>Our helper functions</h2>
+        <pre><code class="hljs scala" style="font-size:23px;" data-trim>
 
           def start[D, Expr, A](defn: FeatureDef[D, Expr]) =
             CreateFeatures(defn)
@@ -384,7 +386,7 @@
       </section>
 
       <section data-transition="fade-out">
-        <h3>Sequence / Traverse </h3>
+        <h2>Sequence / Traverse </h2>
         <pre><code class="hljs scala" style="font-size:23px;">
  def sequence[D, E, A](list: List[FeatureGen[D, E, A]]): FeatureGen[D, E, List[A]] = 
    list.foldLeft(pure[List[A]](Nil))((aa, bb) => bb.map2(aa)(_ :: _))
@@ -396,8 +398,8 @@
 
       <!--Sections grouped together; Start-->
       <section data-transition="fade-out">
-        <h3>Composing....</h3>
-        <pre><code class=" hljs scala" style="font-size:24px; align-items: center;" data-line-numbers="1000" data-trim data-noescape>  
+        <h2>Composing....</h2>
+        <pre><code class=" hljs scala" style="font-size:25px; align-items: center;" data-line-numbers="1000" data-trim data-noescape>  
               val aJob: FeatureGen[FeatureResult[D]] = 
                 start(defn)
 
@@ -415,8 +417,8 @@
       </section>
 
       <section data-transition="fade-out">
-        <h3>Composing....</h3>
-        <pre><code class=" hljs scala" style="font-size:24px; align-items: center;" data-line-numbers="1,2" data-trim data-noescape>  
+        <h2>Composing....</h2>
+        <pre><code class=" hljs scala" style="font-size:25px; align-items: center;" data-line-numbers="1,2" data-trim data-noescape>  
                 val aJob: FeatureGen[FeatureResult[D]] = 
                   start(defn)
                 
@@ -434,8 +436,8 @@
       </section>
 
       <section data-transition="fade-out">
-        <h3>Composing....</h3>
-        <pre><code class=" hljs scala" style="font-size:24px; align-items: center;" data-line-numbers="4" data-trim data-noescape>  
+        <h2>Composing....</h2>
+        <pre><code class=" hljs scala" style="font-size:25px; align-items: center;" data-line-numbers="4" data-trim data-noescape>  
                   val aJob: FeatureGen[FeatureResult[D]] = 
                     start(defn)
 
@@ -453,8 +455,8 @@
       </section>
 
       <section data-transition="fade-out">
-        <h3>Composing....</h3>
-        <pre><code class=" hljs scala" style="font-size:24px; align-items: center;" data-line-numbers="6" data-trim data-noescape>  
+        <h2>Composing....</h2>
+        <pre><code class=" hljs scala" style="font-size:25px; align-items: center;" data-line-numbers="6" data-trim data-noescape>  
                     val aJob: FeatureGen[FeatureResult[D]] = 
                       start(defn)
 
@@ -472,8 +474,8 @@
       </section>
 
       <section data-transition="fade-out">
-        <h3>Composing....</h3>
-        <pre><code class=" hljs scala" style="font-size:24px; align-items: center;" data-line-numbers="8,9" data-trim data-noescape>  
+        <h2>Composing....</h2>
+        <pre><code class=" hljs scala" style="font-size:25px; align-items: center;" data-line-numbers="8" data-trim data-noescape>  
                       val aJob: FeatureGen[FeatureResult[D]] = 
                         start(defn)
 
@@ -491,8 +493,8 @@
       </section>
 
       <section data-transition="fade-out">
-        <h3>Composing....</h3>
-        <pre><code class=" hljs scala" style="font-size:24px; align-items: center;" data-line-numbers="10" data-trim data-noescape>  
+        <h2>Composing....</h2>
+        <pre><code class=" hljs scala" style="font-size:25px; align-items: center;" data-line-numbers="10, 12" data-trim data-noescape>  
                         val aJob: FeatureGen[FeatureResult[D]] = 
                           start(defn)
   
@@ -504,7 +506,7 @@
           
                         anotherResult.map(_.metadata.size)
           
-                        // etc
+                        // and so forth
           
                         </code></pre>
       </section>
