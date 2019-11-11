@@ -361,7 +361,7 @@
             </code></pre>
       </section>
       <section>
-        <h4>Our helper functions</h4>
+        <h3>Our helper functions</h3>
         <pre><code class="hljs scala" style="font-size:22px;" data-trim>
 
           def start[D, Expr, A](defn: FeatureDef[D, Expr]) =
@@ -373,8 +373,10 @@
           def fail[A](message: String) =
             FeatureGen.Fail(message)
 
-          def join[D, Expr,](f1: FeatureGen[D, Expr, FeatureRes[D]], f2: FeatureGen[D, Expr, FeatureRes[D]]) =
-            FeatureGen.Join(f1, f2)
+          def join[D, Expr,](
+            f1: FeatureGen[D, Expr, FeatureRes[D]], 
+            f2: FeatureGen[D, Expr, FeatureRes[D]]
+          ) = FeatureGen.Join(f1, f2)
 
           def combineAll[D, Expr. A](computations: ::[FeatureGen[D, Expr, FeatureRes[D]]]) = 
             computations.reduce(a, b => join(a, b))          
@@ -383,12 +385,12 @@
 
       <section data-transition="fade-out">
         <h3>Sequence / Traverse </h3>
-        <pre><code class="hljs scala" style="font-size:22px;" data-trim>
-              def sequence[D, E, A](list: List[FeatureGen[D, E, A]]): FeatureGen[D, E, List[A]] = 
-                list.foldLeft(pure[List[A]](Nil))((aa, bb) => bb.map2(aa)(_ :: _))
+        <pre><code class="hljs scala" style="font-size:23px;">
+ def sequence[D, E, A](list: List[FeatureGen[D, E, A]]): FeatureGen[D, E, List[A]] = 
+   list.foldLeft(pure[List[A]](Nil))((aa, bb) => bb.map2(aa)(_ :: _))
 
-              def collectAll(list: List[FeatureGen[D, E, A]]): FeatureGen[D, E, List[A]] = 
-                sequence(list)  
+ def collectAll(list: List[FeatureGen[D, E, A]]): FeatureGen[D, E, List[A]] = 
+   sequence(list)  
             </code></pre>
       </section>
 
@@ -513,22 +515,21 @@
 
       <section>
         <h2>Run <span style="color: red;">FeatureGen</span></h2>
-        <p align="left" style="font-size:30px;color: black;"> Have a single function that runs FeatureGen to a target
+        <p style="font-size:30px;color: black;"> A single implementation that runs FeatureGen to a target
           effect. </p>
 
-        <p align="left" style="font-size:30px;color: black;"> We prefer to have an effect system that's maximum
-          expressive in its types. </p>
+        <p style="font-size:30px;color: black;"> In other words, we reduce the number of times of recursions. </p>
 
-        <p align="left" style="font-size:30px;color: black;"> In other words, we can't keep traversing through
-          FeatureGen to plug new backends/test-services </p>
+        <p style="font-size:30px;color: black;"> We prefer to have an effect system that's maximum
+          expressive in its types. </p>
       </section>
 
       <section data-background="images/ZIO.png" data-state="dimbg">
         <h2>Going forward, We are using ZIO</h2>
         <ul>
-          <li>No implicit requirements at user site</li>
+          <li>No implicit requirements</li>
           <li>Relatively straight forward concurrency operations</li>
-          <li>Inbuilt expressive types with error channels.</li>
+          <li>Inbuilt expressive types with error channels</li>
           <li>Awesome type inference</li>
         </ul>
       </section>
@@ -537,7 +538,7 @@
       <section data-background="images/ZIO.png" data-state="dimbg">
         <h2> The mental model of ZIO </h2>
         <div>
-          <pre><code class="hljs scala" style="font-size:28px; align-items: center;" data-trim>
+          <pre><code class="hljs scala" style="font-size:30px; align-items: center;" data-trim>
                   ...
   
                     ZIO[R, E, A]
@@ -547,7 +548,7 @@
 
         </div>
         <div>
-          <pre><code class="hljs scala"  style="font-size:28px; align-items: center;" data-trim>
+          <pre><code class="hljs scala"  style="font-size:30px; align-items: center;" data-trim>
                   ...
   
                     R => Either[E, A]
@@ -561,12 +562,12 @@
 
       <section>
         <h2>Run implementation of ZIO</h2>
-        <pre><code class=" hljs scala" style="font-size:26px; align-items: center;"  data-noescape>
-  type AnalyticsTask[D, Expr, A] = ZIO[DataService[D, Expr], AppError, A] 
+        <pre><code class=" hljs scala" style="font-size:27px; align-items: center;"  data-noescape>
+type AnalyticsTask[D, Expr, A] = ZIO[DataService[D, Expr], AppError, A] 
 
-  type Impl[D, Expr, A] = FeatureGen[D, Expr, A]) => AnalyticsTask[A]
+type Impl[D, Expr, A] = FeatureGen[D, Expr, A]) => AnalyticsTask[A]
 
-  def run[D, Expr, A]: Impl[D, Expr, A] = ??? 
+def run[D, Expr, A]: Impl[D, Expr, A] = ??? 
 
             </code></pre>
       </section>
