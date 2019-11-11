@@ -88,23 +88,23 @@
 
       <section id="fragments">
         <h2>Problem - Context</h2>
-        <h6>We have billions of events as clickstream of customers hitting banking applications.</h6>
-        <h6>We have millions of customer account data.</h6>
-        <h6>We have millions of payment datasets.</h6>
-        <h6>We use all of it to do business analysis and machine learning.</h6>
+        <p align="left" style="font-size:30px"> We have billions of events as clickstream of customers hitting banking
+          applications.</p>
+        <p align="left" style="font-size:30px"> We have millions of customer account data.</p>
+        <p align="left" style="font-size:30px"> We have millions of payment datasets.</p>
+        <p align="left" style="font-size:30px"> We use all of it to do business analysis and machine learning.</p>
       </section>
       <section>
         <h2>Problem - Requirements</h2>
-        <p align="left" style="font-size:30px"> We need to find attributes of customers from big-data.
-          We call them <span style="color: cadetblue;"> "features" </span>
-          Example:
-          total account transactions for a customer in last 3 weeks </p>
-        <p class="fragment" align="left" style="font-size:30px"> Expose a light weight interface just to quickly add new
+        <p align="left" style="font-size:30px"> We need to find attributes of customers from big-data.</p>
+        <p align="left" style="font-size:30px"> We call them <span style="color: cadetblue;"> "features". </span>
+          Example: total account transactions for a customer in last 3 weeks </p>
+        <p class="fragment" align="left" style="font-size:30px"> Expose a light weight interface to quickly add new
           business logic. </p>
         <p class="fragment" align="left" style="font-size:30px"> Expose a thin API to compose them further to
           form a wide table of features. </p>
-        <p class="fragment" align="left" style="font-size:30px"> We further compose them to form tens of hundreds of
-          such wide tables, possibly with features reused across them.
+        <p class="fragment" align="left" style="font-size:30px"> We further compose to form tens of hundreds of
+          wide tables.
         </p>
       </section>
       <section>
@@ -118,11 +118,12 @@
           <span style="font-weight:800;color:red;">compose</span>
           each operations. </p>
 
-        <p class="fragment" align="left" style="font-size:30px;"> The API should be declarative enough
-          for quick buiness changes, but not at the cost of performane.</p>
+        <p class="fragment" align="left" style="font-size:30px;"> Declarative, but <span
+            style="font-weight:800;color:red;"> not </span> at the cost of <span style="font-weight:800;color:red;">
+            performance </span>.</p>
         <p class="fragment" align="left" style="font-size:30px"><span
-            style="font-weight:800;color:red;">optimisations</span>, which is otherwise <span
-            style="font-weight:800;color:red;">impossible</span>
+            style="font-weight:800;color:red;">Optimisations</span>, which is otherwise <span
+            style="font-weight:800;color:red;">complex</span>
           with handwritten language of data-source.
         </p>
         <p class="fragment" align="left" style="font-size:30px;color: black;"> It should be
@@ -155,7 +156,7 @@
             time < time_stamp() &&
             time >= minusDays(time_stamp(), 14)
         </code></pre>
-        <p>Field <span style="color: cadetblue;"> "time" </span> represents data-partitioning</p>
+        <p>Field <span style="color: cadetblue;"> "time" </span> represents partitions.</p>
       </section>
 
       <!-- Slide-->
@@ -179,7 +180,7 @@
       <!--Slide -->
       <section data-transition="fade-out">
         <h2>In short</h2>
-        <pre><code class="hljs scala" style="font-size:22px;" data-trim data-line-numbers="1-10">
+        <pre><code class="hljs scala" style="font-size:25px;" data-trim data-line-numbers="1-10">
           ...
 
           sum(coalesce(account_balance, 0)) 
@@ -187,6 +188,7 @@
           from input_table of 0-14 days
 
           ...
+
        </code></pre>
 
       </section>
@@ -194,7 +196,7 @@
       <!--Slide -->
       <section data-transition="fade-out">
         <h2>Silly thing, Fix feature name</h2>
-        <pre><code class="hljs scala"  style="font-size:22px;" data-trim data-line-numbers="4">
+        <pre><code class="hljs scala"  style="font-size:25px;" data-trim data-line-numbers="4">
                   ...
         
                   sum(coalesce(account_balance, 0)) 
@@ -208,8 +210,8 @@
 
       <!--Slide -->
       <section data-transition="fade-out">
-        <h2>Silly thing, Fix feature name</h2>
-        <pre><code class="hljs scala" style="font-size:22px;" data-trim data-line-numbers="4">
+        <h2>Silly, Fix feature name</h2>
+        <pre><code class="hljs scala" style="font-size:25px;" data-trim data-line-numbers="4">
                         ...
               
                         sum(coalesce(account_balance, 0)) 
@@ -224,6 +226,22 @@
       <!-- Slide -->
       <section data-transition="fade-out">
         <h2>Let's make it compile.</h2>
+        <pre><code class="hljs scala" style="font-size:19px;width: 1200px;" data-trim data-line-numbers="1-6">
+          
+          final case class FeatureDef[D, Expr](
+            inp: Input[D], 
+            op: Expr, 
+            name: String, 
+            partition: TimeWindow
+        )
+        
+        </code></pre>
+
+      </section>
+
+      <!-- Slide -->
+      <section data-transition="fade-out">
+        <h2>Let's make it compile.</h2>
         <pre><code class="hljs scala" style="font-size:22px;" data-trim data-line-numbers="1-6">
           FeatureDef(
             dir("input_table"),
@@ -232,10 +250,6 @@
             0 ~ 14 days
           )
          </code></pre>
-
-        <pre><code class="hljs scala" style="font-size:19px;width: 1200px;" data-trim data-line-numbers="1-6">
-            final case class FeatureDef[D, Expr](inp: Input[D], op: Expr, name: String, partition: TimeWindow)
-           </code></pre>
 
       </section>
 
@@ -524,7 +538,7 @@
         <pre><code class=" hljs scala" style="font-size:26px; align-items: center;" data-trim data-noescape>
               type AnalyticsTask[D, Expr, A] = ZIO[DataService[D, Expr], AppError, A] 
               type Impl[D, Expr, A] = FeatureGen[D, Expr, A]) => AnalyticsTask[A]
-              
+
               def run[D, Expr, A]: Impl[D, Expr, A] = ??? 
 
             </code></pre>
