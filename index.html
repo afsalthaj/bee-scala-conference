@@ -40,12 +40,12 @@
       <section>
         <h2>Why FP in Scala made difficult?</h2>
         <ul style="font-size:35px">
-          <li>Free structures with boiler-plates</li>
           <li>Get hit with a ton of jargon </li>
-          <li>Implicits.</li>
-          <li>Type inference.</li>
-          <li>Typeclass specialisations.</li>
-          <li>Lost state of possibly many solutions.</li>
+          <li>Implicits</li>
+          <li>Type inference</li>
+          <li>Typeclass specialisations</li>
+          <li>Free structures with boiler-plates</li>
+          <li>Many options of solutions</li>
         </ul>
         <p style="font-size:35px">Result is,
           <span style='color:maroon'> slower </span> development of
@@ -59,10 +59,10 @@
       <section>
         <h2>fundamentals</h2>
         <ul>
-          <li>Referential transparency.</li>
+          <li>Referential transparency</li>
           <li>Total functions</li>
-          <li>Lawful structures - descriptions</li>
-          <li>Type driven development.</li>
+          <li>Lawful abstractions - descriptions</li>
+          <li>Type driven development</li>
         </ul>
         <p> Result is,
           <strike style='color:maroon'> slower </strike> <span style='color:green'> faster </span> development of
@@ -70,16 +70,12 @@
         </p>
       </section>
 
-      <!--Slide -->
 
-      <section>
-        <h3>Find the structure.</h3>
-      </section>
       <!-- Slide -->
 
       <section>
         <h3 class="fragment grow">Let us write FP for a Bigdata problem </h3>
-        <h6 class="fragment">Handling REAL WORLD requirements. </h6>
+        <h6 class="fragment">Handling REAL WORLD requirements </h6>
         <br>
       </section>
 
@@ -87,39 +83,39 @@
 
       <section id="fragments">
         <h2>Context</h2>
-        <p style="font-size:30px"> Billions of banking app clickstream events.</p>
-        <p style="font-size:30px"> Millions of customer account data.</p>
-        <p style="font-size:30px"> Millions of payment datasets.</p>
-        <p style="font-size:30px"> Do business analysis and machine learning.</p>
+        <p style="font-size:30px"> Billions of banking app clickstream events</p>
+        <p style="font-size:30px"> Millions of customer account data</p>
+        <p style="font-size:30px"> Millions of payment datasets</p>
+        <p style="font-size:30px"> Do business analysis and machine learning</p>
       </section>
       <section>
         <h2>Problem</h2>
         <p style="font-size:30px"> Find attributes of customers from big-data.</p>
         <p class="fragment" style="font-size:30px"> <span style="color: cadetblue;">Example</span>: total account
-          transactions for a customer in
+          transactions for each customer in
           last 3
           weeks </p>
         <p class="fragment" style="font-size:30px"> Attributes are <span style="color: cadetblue;">
-            "features". </span></p>
+            "features" </span></p>
         <p class="fragment" style="font-size:30px"> A simple interface to quickly add new <span
             style="color: cadetblue;">features</span>
-          / business logic. </p>
+          / business logic </p>
         <p class="fragment" style="font-size:30px"> A thin API to combine them to
-          get a widetable </p>
+          get a wide-table </p>
         <p class="fragment" style="font-size:30px"> We further compose to form tens of hundreds of
-          wide tables.
+          wide-tables
         </p>
       </section>
       <section>
         <h3>What does that mean for us?</h3>
-        <p align="left" style="font-size:30px;color: black;"> That is a thin layer of interface to
+        <p align="left" style="font-size:30px;color: black;"> Need a thin layer of interface to
           <span style="font-weight:900;color:red;">declaratively</span>
           define <span style="font-weight:900;color:red;">clear and concise</span> business logic / features - <span
             style="font-weight:900;color:red;">uncluttered</span> with
-          <span style="font-weight: 900;color:red;">performance related details</span> </p>
+          <span style="font-weight: 900;color:red;">performance optimisations</span> </p>
         <p class="fragment" align="left" style="font-size:30px;color: black;"> Accompanied by an API that allows you to
           <span style="font-weight:800;color:red;">compose</span>
-          each operations. </p>
+          the logic</p>
 
         <p class="fragment" align="left" style="font-size:30px;"> Declarative, but <span
             style="font-weight:800;color:red;"> not </span> at the cost of <span style="font-weight:800;color:red;">
@@ -140,7 +136,7 @@
       <!--Slide -->
       <section>
         <h2>A simple feature definition</h2>
-        <h6> Find out sum of account balance of all customers in last 14 days.</h6>
+        <h6> Find out sum of account balance of each customer in last 14 days</h6>
       </section>
 
       <!-- Slide 18 -->
@@ -153,7 +149,7 @@
             sum(coalesce(account_balance, 0)) 
             as "account_balance_0_14d"
           from 
-          input_table
+            input_table
           group by customer_id
           where
             time < time_stamp() &&
@@ -171,7 +167,7 @@
             sum(coalesce(account_balance, 0)) 
             as "account_balance_0_14d"
           from 
-          input_table
+            input_table
           group by customer_id
           where
             time < time_stamp() &&
@@ -228,7 +224,7 @@
 
       <!-- Slide -->
       <section data-transition="fade-out">
-        <h2>Let's make it compile.</h2>
+        <h2>Let's express this in Scala</h2>
         <pre><code class="hljs scala" style="font-size:28px;" data-trim data-line-numbers="1-6">
           
           final case class FeatureDef[D, Expr](
@@ -255,7 +251,7 @@
       final case class Constant[D](value: D) extends Input[D]
       final case class Directory[D](input: String) extends Input[D]
 
-      def dir[D](input: Input[D]): Input[D] = Directory(input)
+      def dir[D](name: String): Input[D] = Directory(name)
       def const[D](input: Input[D]): Input[D] = Constant(input)
     }   
           </code></pre>
@@ -278,11 +274,12 @@
       <!--Slide-->
       <section data-transition="fade-out">
         <h3>With a complex input.</h3>
-        <pre><code class="hljs scala"  style="font-size:25px;" data-trim data-line-numbers="2">
+        <pre><code class="hljs scala"  style="font-size:28px;" data-trim data-line-numbers="2,3">
             FeatureDef(
-              dir("input_table").join(dir("another_table")).orElse(const("myTestData")),
-              sum(when("browser" == "safari") 1 else 0),
-              browser_safari_count
+              dir("input_table").join(dir("another_table"))
+                .orElse(const("myTestData")),
+              sum(coalesce(account_balance, 0)),
+              "account_balance"
               0 ~ 14 days
             )
            </code></pre>
@@ -292,12 +289,12 @@
 
       <section>
         <h6>And we can have a list of them</h6>
-        <pre><code style="font-size:22px;" data-trim data-line-numbers="1-10" data-noescape>
+        <pre><code class="hljs scala" style="font-size:22px;" data-trim data-line-numbers="1-10" data-noescape>
           List(
-            FeatureDef(dir("account"), sum(acc_bal)......),
-            FeatureDef(dir("payments"), sum(debit).when(country == 'aus')......),
-            FeatureDef(dir("account").join(dir("payments")), max(acc_bal)......),
-            FeatureDef(const(data), min(acc_bal)......),
+            FeatureDef(dir("account"), sum(acc_bal)..),
+            FeatureDef(dir("payments"), sum(debit).when(country == 'aus')..),
+            FeatureDef(dir("account").join(dir("payments")), max(acc_bal)..),
+            FeatureDef(const(data), min(acc_bal)..),
           )
 
          </code></pre>
@@ -327,7 +324,7 @@
                       FeatureGen.Zip(self, feature2)
     
                     def map2[B, C](that: FeatureGen[D, E, B])(f: (A, B) => C): FeatureGen[D, E, C] =
-                      (self zip that).map({ case (a, b) => f(a, b) })
+                      (self <*> that).map({ case (a, b) => f(a, b) })
                   
                     def map[B](f: A => B): FeatureGen[D, E, B] =
                       FeatureGen.Map(self, f)
@@ -343,15 +340,19 @@
           </code></pre>
       </section>
       <section>
+        <h2> Representation </h2>
 
-        <pre><code class="hljs scala" style="font-size:19px;">
+        <pre><code class="hljs scala" style="font-size:20px;">
   final case class Pure[A](value: A) extends FeatureGen[Nothing, Nothing, A]
   
-  final case class Zip[D, E, A, B](f: FeatureGen[D, E, A], g: FeatureGen[D, E, B]) extends FeatureGen[D, Expr, (A, B)]
+  final case class Zip[D, E, A, B](f: FeatureGen[D, E, A], g: FeatureGen[D, E, B]) 
+    extends FeatureGen[D, Expr, (A, B)]
 
-  final case class Map[D, E, A, B](feature1: FeatureGen[D, E, A], f: A => B) extends FeatureGen[D, E, B]
+  final case class Map[D, E, A, B](feature1: FeatureGen[D, E, A], f: A => B) 
+    extends FeatureGen[D, E, B]
 
-  final case class CreateFeatures[D, E](input: FeatureDef[D, E]) extends FeatureGen[D, E, FeatureRes[D]]
+  final case class CreateFeatures[D, E](input: FeatureDef[D, E]) 
+    extends FeatureGen[D, E, FeatureRes[D]]
 
   final case class JoinFeatures[D, E](
     f1: FeatureGen[D, E, FeatureRes[D]], 
@@ -689,7 +690,7 @@
           </code></pre>
       </section>
       <section>
-        <h3>Let' kick this off with <span style="color: red;">Apache Flink</span></h3>
+        <h3>Let's run with <span style="color: red;">Apache Flink</span></h3>
       </section>
       <section>
         <h2>Let's define the set of features !</h2>
@@ -735,7 +736,7 @@
             </code></pre>
       </section>
       <section>
-        <h3>Let' kick this off with <span style="color: red;">Apache Flink</span></h3>
+        <h3>Let' execute now ! </h3>
         <pre><code class="hljs scala" style="font-size:26px;">
 
    val flinkSerive = new DataService[flink.Table, flink.Expression] { .. }
@@ -749,7 +750,7 @@
             </code></pre>
       </section>
       <section>
-        <h4>Without Any Optimiser</h4>
+        <h3>Without Any Optimiser</h3>
         <video width="1000" height="680" controls>
           <source src="images/fully_unoptimised.mov" type="video/mp4">
         </video>
@@ -1227,12 +1228,15 @@
       </section>
 
       <!-- Slide -->
+      <section>
+        <h3>Backend Agonostic? </h3>
+        <h6>To a great extent</h6>
+        All of this is <span style="color: red;">proven</span> to be
+        working with <span style="color: red;">Apache Spark</span> too !
+      </section>
 
       <section>
-        <h4>Summary</h4>
-
-        WIP
-
+        <h4>Thanks ..</h4>
       </section>
 
       <!-- Slide 20 -->
@@ -1261,7 +1265,6 @@
       minScale: 0.2,
       maxScale: 1.5,
       history: true,
-      hash: true,
       dependencies: [
         { src: 'plugin/markdown/marked.js' },
         { src: 'plugin/markdown/markdown.js' },
