@@ -523,8 +523,9 @@
         <p style="font-size: 22px;">We need a richer target to not deal with recursion more than once! </p>
         <pre><code class=" hljs scala" style="font-size:26px; align-items: center;" data-trim data-noescape>
               type AnalyticsTask[D, Expr, A] = ZIO[DataService[D, Expr], AppError, A] 
-
-              def run[D, Expr, A]: FeatureGen[D, Expr, A]) => AnalyticsTask[A] = ??? 
+              type Impl[D, Expr, A] = FeatureGen[D, Expr, A]) => AnalyticsTask[A]
+              
+              def run[D, Expr, A]: Impl[D, Expr, A] = ??? 
 
             </code></pre>
       </section>
@@ -540,7 +541,7 @@
               </code></pre>
       </section>
       <section>
-        <h2>Let's write RUN </h2>
+        <h2>With that, Let's write RUN </h2>
         <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="1-10" data-trim>
         def run[D, Expr, A]: FeatureGen[D, Expr, A] => AnalyticsTask[A] = 
           fa =>
