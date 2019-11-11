@@ -98,8 +98,7 @@
         <h2>Problem - Requirements</h2>
         <p align="left" style="font-size:30px"> We need to find attributes of customers from big-data.</p>
         <p class="fragment" align="left" style="font-size:30px"> We call them <span style="color: cadetblue;">
-            "features". </span>
-          Example: total account transactions for a customer in last 3 weeks </p>
+            "features". </span> Example: total account transactions for a customer in last 3 weeks </p>
         <p class="fragment" align="left" style="font-size:30px"> Expose a light weight interface to quickly add new
           business logic. </p>
         <p class="fragment" align="left" style="font-size:30px"> Expose a thin API to combine them to
@@ -227,7 +226,7 @@
       <!-- Slide -->
       <section data-transition="fade-out">
         <h2>Let's make it compile.</h2>
-        <pre><code class="hljs scala" style="font-size:25px;width: 1200px;" data-trim data-line-numbers="1-6">
+        <pre><code class="hljs scala" style="font-size:28px;" data-trim data-line-numbers="1-6">
           
           final case class FeatureDef[D, Expr](
             inp: Input[D], 
@@ -244,10 +243,7 @@
         <h2>Input</h2>
         <pre><code class="hljs scala" style="font-size:22px;width: 1200px;" data-trim>
             
-   sealed trait Input[D] { self =>
-     def join(that: Input[D], field: String): Input[D] =
-       Input.Joined(self, that, field)
-     
+   sealed trait Input[D] { self =>     
      def orElse(input: Input[D]): Input[D] =
        Input.OrElse(self, input)
      }
@@ -255,9 +251,9 @@
     object Input {
       final case class Constant[D](value: D) extends Input[D]
       final case class Directory[D](input: String) extends Input[D]
-      final case class Joined[D](inp1: Input[D], inp2: Input[D], onField: String) extends Input[D]
 
       def dir[D](input: Input[D]): Input[D] = Directory(input)
+      def const[D](input: Input[D]): Input[D] = Constant(input)
     }   
           </code></pre>
 
@@ -266,7 +262,7 @@
       <!-- Slide -->
       <section data-transition="fade-out">
         <h2>Example of a FeatureDef.</h2>
-        <pre><code class="hljs scala" style="font-size:25px;" data-trim data-line-numbers="1-6">
+        <pre><code class="hljs scala" style="font-size:28px;" data-trim data-line-numbers="1-6">
           FeatureDef(
             dir("input_table"),
             sum(coalesce(account_balance, 0)) 
@@ -279,7 +275,7 @@
       <!--Slide-->
       <section data-transition="fade-out">
         <h3>With a complex input.</h3>
-        <pre><code class="hljs scala"  style="font-size:22px;" data-trim data-line-numbers="2">
+        <pre><code class="hljs scala"  style="font-size:25px;" data-trim data-line-numbers="2">
             FeatureDef(
               dir("input_table").join(dir("another_table")).orElse(const("myTestData")),
               sum(when("browser" == "safari") 1 else 0),
@@ -307,8 +303,8 @@
       <!-- Slide 5 -->
 
       <section>
-        <h3>Combinators</h3>
-        <h6>We need more combinators. But to begin with,</h6>
+        <h3>Primitives and Combinators</h3>
+        <h6>To begin with,</h6>
         <pre><code class=" hljs scala" style="font-size:22px;" data-trim data-line-numbers="1-100">
             def start(featureDef: FeatureDef[D]): FeatureGen[FeatureRes[D]] = ???
   
@@ -337,18 +333,23 @@
         </code></pre>
       </section>
       <section>
-        <pre><code class="hljs scala" style="font-size:19px;" data-noescape>
-                <p style="font-size:21px;text-align:center;"><span style="color: cadetblue;">D</span> is data</p>
-            <p style="font-size:21px;text-align:center;"><span style="color: cadetblue;">E</span> is Expression that can operate on data</p>
-            <p style="font-size:21px;text-align:center;"><span style="color: cadetblue;">A</span> is the result A</p>
+        <pre><code class="hljs scala" style="font-size:19px;" data-noescape data-trim>
+                <p style="font-size:26px;text-align:center;"><span style="color: cadetblue;">D</span> is data</p>
+            <p style="font-size:26px;text-align:center;"><span style="color: cadetblue;">E</span> is Expression that can operate on data</p>
+            <p style="font-size:26px;text-align:center;"><span style="color: cadetblue;">A</span> is the result of the computation.</p>
           </code></pre>
       </section>
       <section>
+
         <pre><code class="hljs scala" style="font-size:19px;">
   final case class Pure[A](value: A) extends FeatureGen[Nothing, Nothing, A]
+  
   final case class Zip[D, E, A, B](f: FeatureGen[D, E, A], g: FeatureGen[D, E, B]) extends FeatureGen[D, Expr, (A, B)]
+
   final case class Map[D, E, A, B](feature1: FeatureGen[D, E, A], f: A => B) extends FeatureGen[D, E, B]
+
   final case class CreateFeatures[D, E](input: FeatureDef[D, E]) extends FeatureGen[D, E, FeatureRes[D]]
+
   final case class JoinFeatures[D, E](
     f1: FeatureGen[D, E, FeatureRes[D]], 
     f2: FeatureGen[D, E, FeatureRes[D]]
@@ -357,28 +358,28 @@
       </section>
       <section>
         <h4>Our helper functions</h4>
-        <pre><code class="hljs scala" style="font-size:19px;" data-trim>
+        <pre><code class="hljs scala" style="font-size:22px;" data-trim>
 
-          def start[D, Expr, A](featureDef: FeatureDef[D, Expr]): FeatureGen[D, Expr, FeatureRes[D]] =
-            CreateFeatures(featureDef)
+          def start[D, Expr, A](defn: FeatureDef[D, Expr]) =
+            CreateFeatures(defn)
 
-          def pure[D, Expr, A](value: => A): FeatureGen[D, Expr, A] =
+          def pure[D, Expr, A](value: => A) =
             FeatureGen.Pure(value)
 
-          def fail[A](message: String): FeatureGen[Nothing, Nothing, A] =
+          def fail[A](message: String) =
             FeatureGen.Fail(message)
 
-          def join[D, Expr,](f1: FeatureGen[D, Expr, FeatureRes[D]], f2: FeatureGen[D, Expr, FeatureRes[D]]): FeatureGen[D, Expr, A] =
+          def join[D, Expr,](f1: FeatureGen[D, Expr, FeatureRes[D]], f2: FeatureGen[D, Expr, FeatureRes[D]]) =
             FeatureGen.Join(f1, f2)
 
-          def combineAll[D, Expr. A](list: ::[FeatureGen[D, Expr, FeatureRes[D]]]): FeatureGen[D, Expr, FeatureRes[D]] = 
-            list.reduce(a, b => join(a, b))          
+          def combineAll[D, Expr. A](computations: ::[FeatureGen[D, Expr, FeatureRes[D]]]) = 
+            computations.reduce(a, b => join(a, b))          
         </code></pre>
       </section>
 
       <section data-transition="fade-out">
-        <h3>Sequence ??? </h3>
-        <pre><code class="hljs scala" style="font-size:19px;" data-trim>
+        <h3>Sequence / Traverse </h3>
+        <pre><code class="hljs scala" style="font-size:22px;" data-trim>
               def sequence[D, E, A](list: List[FeatureGen[D, E, A]]): FeatureGen[D, E, List[A]] = 
                 list.foldLeft(pure[List[A]](Nil))((aa, bb) => bb.map2(aa)(_ :: _))
 
@@ -508,20 +509,22 @@
 
       <section>
         <h2>Run <span style="color: red;">FeatureGen</span></h2>
-        <ul>
-          <li>Have a single implementation that goes from FeatureGen to target effect system.
-          </li>
-          <li>For that we need target effect to be rich with types!</li>
-          <li>In other words, we can't keep traversing through FeatureGen to plug new backends/test-services</li>
-        </ul>
+        <p align="left" style="font-size:30px;color: black;"> Have a single function that runs FeatureGen to a target
+          effect. </p>
+
+        <p align="left" style="font-size:30px;color: black;"> We prefer to have an effect system that's maximum
+          expressive in its types. </p>
+
+        <p align="left" style="font-size:30px;color: black;"> In other words, we can't keep traversing through
+          FeatureGen to plug new backends/test-services </p>
       </section>
 
       <section data-background="images/ZIO.png" data-state="dimbg">
         <h2>Going forward, We are using ZIO</h2>
         <ul>
-          <li>Relatively easy to pick up</li>
-          <li>No implicit schedule/timer</li>
-          <li>Easy concurrrency</li>
+          <li>No implicit requirements at user site</li>
+          <li>Relatively straight forward concurrency operations</li>
+          <li>Inbuilt expressive types with error channels.</li>
           <li>Awesome type inference</li>
         </ul>
       </section>
@@ -530,7 +533,7 @@
       <section data-background="images/ZIO.png" data-state="dimbg">
         <h2> The mental model of ZIO </h2>
         <div>
-          <pre><code class="hljs scala" data-trim>
+          <pre><code class="hljs scala" style="font-size:28px; align-items: center;" data-trim>
                   ...
   
                     ZIO[R, E, A]
@@ -540,7 +543,7 @@
 
         </div>
         <div>
-          <pre><code class="hljs scala" data-trim>
+          <pre><code class="hljs scala"  style="font-size:28px; align-items: center;" data-trim>
                   ...
   
                     R => Either[E, A]
@@ -554,17 +557,17 @@
 
       <section>
         <h2>Run implementation of ZIO</h2>
-        <p style="font-size: 22px;">We need a richer target to not deal with recursion more than once! </p>
-        <pre><code class=" hljs scala" style="font-size:26px; align-items: center;" data-trim data-noescape>
-              type AnalyticsTask[D, Expr, A] = ZIO[DataService[D, Expr], AppError, A] 
-              type Impl[D, Expr, A] = FeatureGen[D, Expr, A]) => AnalyticsTask[A]
+        <pre><code class=" hljs scala" style="font-size:26px; align-items: center;"  data-noescape>
+  type AnalyticsTask[D, Expr, A] = ZIO[DataService[D, Expr], AppError, A] 
 
-              def run[D, Expr, A]: Impl[D, Expr, A] = ??? 
+  type Impl[D, Expr, A] = FeatureGen[D, Expr, A]) => AnalyticsTask[A]
+
+  def run[D, Expr, A]: Impl[D, Expr, A] = ??? 
 
             </code></pre>
       </section>
       <section>
-        <h3>Where, DataService knows about simple operations on data</h3>
+        <h3>Where, <span style="color: red;">Dataservice</span> is</h3>
         <pre><code class="hljs scala" style="font-size:19px;" data-line-numbers="1-10" data-trim>
             trait DataService[D, Expr] {
               def get(input: Input[D], partition: Option[Window]): Task[D]
@@ -1201,6 +1204,8 @@
       // Bounds for smallest/largest possible scale to apply to content
       minScale: 0.2,
       maxScale: 1.5,
+      history: true,
+      hash: true,
       dependencies: [
         { src: 'plugin/markdown/marked.js' },
         { src: 'plugin/markdown/markdown.js' },
