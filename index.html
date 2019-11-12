@@ -132,7 +132,7 @@
       </section>
 
       <section data-transition="fade-in">
-        <h3>But, we don't have a year to make it happen. </h3>
+        <h3>But, we don't have a year to make it happen </h3>
       </section>
 
       <!--Slide -->
@@ -228,14 +228,12 @@
       <section data-transition="fade-out">
         <h3>Let's express this in Scala</h3>
         <pre><code class="hljs scala" style="font-size:28px;">
-          
           final case class FeatureDef[D, Expr](
             inp: Input[D], 
             op: Expr, 
             name: String, 
             partition: TimeWindow
           )
-        
         </code></pre>
 
       </section>
@@ -263,7 +261,7 @@
       <!-- Slide -->
       <section data-transition="fade-out">
         <h3>Example of a FeatureDef</h3>
-        <pre><code class="hljs scala" style="font-size:28px;" data-trim data-line-numbers="1-6">
+        <pre><code class="hljs scala" style="font-size:28px;">
           FeatureDef(
             dir("input_table"),
             sum(coalesce(account_balance, 0)) 
@@ -1057,16 +1055,16 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
       <section data-transition="fade-out">
         <h3>Get all <span style="color:red">Feature-Requests</span></h3>
 
-        <pre><code class="hljs scala" style="font-size:22px;"data-line-numbers="6"  data-trim data-noescape>
+        <pre><code class="hljs scala" style="font-size:22px;"data-line-numbers="2,3,6"  data-trim data-noescape>
                   def go[B](
                     fa: FeatureGen[D, E, B],
                     requests: FeatureRequests[D, E]
                   ): FeatureRequests[D, E] =
                     fa match {
                       case CreateFeatures(featureDef) => requests.add(featureDef)
-                      case JoinFeatures(f1, f2)       => loop(f1, requests).merge(loop(f2, requests))
-                      case Map(f1, _)                 => loop(f1, requests)
-                      case Zip(f1, f2)                => loop(f1, requests) ++ loop(f2, requests)
+                      case JoinFeatures(f1, f2)       => go(f1, requests).merge(loop(f2, requests))
+                      case Map(f1, _)                 => go(f1, requests)
+                      case Zip(f1, f2)                => go(f1, requests) ++ loop(f2, requests)
                       ..
                     }
               
@@ -1080,16 +1078,16 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
       <section data-transition="fade-out">
         <h3>Get all <span style="color:red">Feature-Requests</span></h3>
 
-        <pre><code class="hljs scala" style="font-size:22px;"data-line-numbers="7"  data-trim data-noescape>
+        <pre><code class="hljs scala" style="font-size:22px;"data-line-numbers="2,3,7"  data-trim data-noescape>
                   def go[B](
                     fa: FeatureGen[D, E, B],
                     requests: FeatureRequests[D, E]
                   ): FeatureRequests[D, E] =
                     fa match {
                       case CreateFeatures(featureDef) => requests.add(featureDef)
-                      case JoinFeatures(f1, f2)       => loop(f1, requests).merge(loop(f2, requests))
-                      case Map(f1, _)                 => loop(f1, requests)
-                      case Zip(f1, f2)                => loop(f1, requests) ++ loop(f2, requests)
+                      case JoinFeatures(f1, f2)       => go(f1, requests).merge(loop(f2, requests))
+                      case Map(f1, _)                 => go(f1, requests)
+                      case Zip(f1, f2)                => go(f1, requests) ++ loop(f2, requests)
                       ..
                     }
               
@@ -1103,16 +1101,16 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
       <section data-transition="fade-out">
         <h3>Get all <span style="color:red">Feature-Requests</span></h3>
 
-        <pre><code class="hljs scala" style="font-size:22px;"data-line-numbers="8"  data-trim data-noescape>
+        <pre><code class="hljs scala" style="font-size:22px;"data-line-numbers="2,3,8"  data-trim data-noescape>
                     def go[B](
                       fa: FeatureGen[D, E, B],
                       requests: FeatureRequests[D, E]
                     ): FeatureRequests[D, E] =
                       fa match {
                         case CreateFeatures(featureDef) => requests.add(featureDef)
-                        case JoinFeatures(f1, f2)       => loop(f1, requests).merge(loop(f2, requests))
-                        case Map(f1, _)                 => loop(f1, requests)
-                        case Zip(f1, f2)                => loop(f1, requests) ++ loop(f2, requests)
+                        case JoinFeatures(f1, f2)       => go(f1, requests).merge(loop(f2, requests))
+                        case Map(f1, _)                 => go(f1, requests)
+                        case Zip(f1, f2)                => go(f1, requests) ++ loop(f2, requests)
                         ..
                       }
                 
@@ -1126,16 +1124,16 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
       <section data-transition="fade-out">
         <h3>Get all <span style="color:red">Feature-Requests</span></h3>
 
-        <pre><code class="hljs scala" style="font-size:22px;"data-line-numbers="9"  data-trim data-noescape>
+        <pre><code class="hljs scala" style="font-size:22px;"data-line-numbers="2,3,9"  data-trim data-noescape>
                       def go[B](
                         fa: FeatureGen[D, E, B],
                         requests: FeatureRequests[D, E]
                       ): FeatureRequests[D, E] =
                         fa match {
                           case CreateFeatures(featureDef) => requests.add(featureDef)
-                          case JoinFeatures(f1, f2)       => loop(f1, requests).merge(loop(f2, requests))
-                          case Map(f1, _)                 => loop(f1, requests)
-                          case Zip(f1, f2)                => loop(f1, requests) ++ loop(f2, requests)
+                          case JoinFeatures(f1, f2)       => go(f1, requests).merge(loop(f2, requests))
+                          case Map(f1, _)                 => go(f1, requests)
+                          case Zip(f1, f2)                => go(f1, requests) ++ loop(f2, requests)
                           ..
                         }
                   
@@ -1168,8 +1166,8 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
                        .collectAll(list.map(wideTable => impl(wideTable.execute)))
                        .map(preJoined => {
                          val fn: FeatureGen[D, Expr, A] => AnalyticsTask[D, Expr, A]) = {
-                           case CreateFeatures(df) => lookup(preJoined) // may or may not return features.
-                           case JoinFeatures(a, b) => // handle the absence of features on the right side.
+                           case CreateFeatures(df) => lookup(preJoined) <span><button style="font-size: 25px;" class="fragment">// may or may not return features.</button></span>
+                           case JoinFeatures(a, b) => <span><button style="font-size: 25px;" class="fragment">// handle the absence of features on the right side.</button></span> 
                          }
                           
                          fn // The new function implements fa by looking up createdFeatures.
