@@ -319,7 +319,7 @@
       <!-- Slide 8 -->
 
       <section data-transition="fade-in">
-        <h3>The structure.</h3>
+        <h3>The structure</h3>
         <pre><code class="hljs scala" style="font-size:22px;width: 1200px;" data-line-numbers="1-10"  data-trim>
                   sealed trait FeatureGen[D, E, A] { self =>   
                     def <*>[B](feature2: FeatureGen[D, E, B]): FeatureGen[D, E, (A, B)] =
@@ -335,8 +335,8 @@
         </code></pre>
       </section>
       <section data-transition="fade-in">
-        <pre><code class="hljs scala" style="font-size:19px;" data-noescape data-trim>
-                <p style="font-size:26px;text-align:center;"><span style="color: cadetblue;">D</span> is data</p>
+        <pre><code class="hljs scala" style="font-size:50px;" data-noescape data-trim>
+            <p style="font-size:26px;text-align:center;"><span style="color: cadetblue;">D</span> is data</p>
             <p style="font-size:26px;text-align:center;"><span style="color: cadetblue;">E</span> is Expression that can operate on data</p>
             <p style="font-size:26px;text-align:center;"><span style="color: cadetblue;">A</span> is the result of the computation.</p>
           </code></pre>
@@ -380,7 +380,7 @@
             f2: FeatureGen[D, Expr, FeatureRes[D]]
           ) = FeatureGen.Join(f1, f2)
 
-          def combineAll[D, Expr. A](computations: ::[FeatureGen[D, Expr, FeatureRes[D]]]) = 
+          def combineAll[D, Expr. A](computations: List[FeatureGen[D, Expr, FeatureRes[D]]]) = 
             computations.reduce(a, b => join(a, b))          
         </code></pre>
       </section>
@@ -532,7 +532,7 @@
           <li>No implicit requirements</li>
           <li>Relatively easy concurrency operations</li>
           <li>Expressive types with error channels</li>
-          <li>Better type inference</li>
+          <li>Great type inference</li>
         </ul>
       </section>
 
@@ -563,7 +563,7 @@
       </section>
 
       <section data-transition="fade-in">
-        <h3>Run implementation of ZIO</h3>
+        <h3>Convert FeatureGen to ZIO</h3>
         <pre><code class=" hljs scala" style="font-size:27px; align-items: center;"  data-noescape>
 type AnalyticsTask[D, Expr, A] = ZIO[DataService[D, Expr], AppError, A] 
 
@@ -574,7 +574,7 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
             </code></pre>
       </section>
       <section data-transition="fade-in">
-        <h3>Where, <span style="color: red;">Dataservice</span> is</h3>
+        <h3>Dataservice</h3>
         <pre><code class="hljs scala" style="font-size:24px;" data-line-numbers="1-10" data-trim>
             trait DataService[D, Expr] {
 
@@ -742,7 +742,7 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
         <h3>Let' execute now ! </h3>
         <pre><code class="hljs scala" style="font-size:26px;">
 
-   val flinkSerive = new DataService[flink.Table, flink.Expression] { .. }
+   val flinkService = new DataService[flink.Table, flink.Expression] { .. }
 
    val job: FeatureGen[Table, Expression] = 
      FeatureGen.combineAll(features.map(start))      
@@ -801,12 +801,9 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
       <!--Slide-->
       <section data-transition="fade-in">
         <h3>With The Quick Fix On!</h3>
-        <video width="1000" height="680" controls>
+        <video width="900" height="600" controls>
           <source src="images/combineAllEffJoin.mov" type="video/mp4">
         </video>
-        <pre><code class="hljs scala" style="font-size:22px;"  data-noescape>
-                FeatureGen.<style="font-color:red">CombineAllEff</style>(features.map(start))      
-           </code></pre>
       </section>
 
       <!-- Slide -->
@@ -1271,7 +1268,6 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
               </code></pre>
       </section>
       <section data-transition="fade-in">
-        <h4>With Join, Aggregation & Reuse Optimiser</h4>
         <video width="1000" height="600" controls>
           <source src="images/thbestplan.mov" type="video/mp4">
         </video>
@@ -1279,7 +1275,7 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
 
       <!-- Slide -->
       <section data-transition="fade-in">
-        <h4> Simplified.. </h4>
+        <h3> Simplified </h3>
         <img src="images/thbestplan.png" style="border: none;" width=800>
       </section>
 
@@ -1325,16 +1321,16 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
 
       <!-- Slide -->
       <section data-transition="fade-in">
-        <h3>Backend Agonostic? </h3>
+        <h3>Backend Agnostic? </h3>
         <p style="font-size:40px;color: black;"> All of this is <span style="color: red;">proven</span> to be
           working with <span style="color: red;">Apache Spark</span> too ! </p>
       </section>
 
       <section data-transition="fade-in">
-        <h3> And that's also a way of doing it in FP ! </h3>
+        <h3> And that's how to do it in FP ! </h3>
         <p style="font-size:30px;color: black;"> Purely functional </p>
-        <p style="font-size:30px;color: black;"> Scalable, ~ declarative</p>
-        <p style="font-size:30px;color: black;">No time spent on boilerplates</p>
+        <p style="font-size:30px;color: black;"> Scalable, declarative</p>
+        <p style="font-size:30px;color: black;">No time spent on boilerplate</p>
         <p style="font-size:30px;color: black;"> No implicits</p>
         <p style="font-size:30px;color: black;"> No macros</p>
         <p style="font-size:30px;color: black;"> Relatively small piece of code - altogether.
