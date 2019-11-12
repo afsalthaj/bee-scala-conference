@@ -1319,6 +1319,27 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
 
       </section>
 
+      <section>
+        <h3> Testing </h3>
+
+
+        <p style="font-size:30px;color: black;"> Think in terms of laws.</p>
+        <p style="font-size:30px;color: black;"> How to ensure the DataService adheres to assumptions of abstraction ?
+        </p>
+        <pre><code class="hljs scala" style="font-size:20px;" data-trim data-noescape>
+          // Assuming project is FeatureRes => FeatureRes
+          join(project(exprs, d1), project(exprs, d2)) == project(join(d1, d2))
+          </code></pre>
+
+
+        <p style="font-size:30px;color: black;">No time spent on boilerplate</p>
+        <p style="font-size:30px;color: black;"> No implicits</p>
+        <p style="font-size:30px;color: black;"> No macros</p>
+        <p style="font-size:30px;color: black;"> Relatively small piece of code - altogether.
+        </p>
+
+      </section>
+
       <!-- Slide -->
       <section data-transition="fade-in">
         <h3>Backend Agnostic? </h3>
