@@ -16,7 +16,7 @@ html {
   overflow: hidden; }
 
 html.dimbg .slide-background {
-  opacity: 0.2 !important; }
+  opacity: 0.05 !important; }
 
 body {
   height: 100%;

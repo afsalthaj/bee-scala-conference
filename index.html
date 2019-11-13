@@ -61,7 +61,7 @@
         <ul>
           <li>Referential transparency</li>
           <li>Total functions</li>
-          <li>Lawful abstractions - descriptions</li>
+          <li>Lawful abstractions</li>
           <li>Type driven development</li>
         </ul>
         <p> Result is,
@@ -83,7 +83,7 @@
 
       <section data-transition="fade-in" id="fragments">
         <h3>Context</h3>
-        <p style="font-size:30px"> Billions of banking app clickstream events</p>
+        <p style="font-size:30px"> Billions of clickstream events hitting banking app</p>
         <p style="font-size:30px"> Millions of customer account data</p>
         <p style="font-size:30px"> Millions of payment datasets</p>
         <p style="font-size:30px"> Do business analysis and machine learning</p>
@@ -228,12 +228,12 @@
       <section data-transition="fade-out">
         <h3>Let's express this in Scala</h3>
         <pre><code class="hljs scala" style="font-size:28px;">
-          final case class FeatureDef[D, Expr](
-            inp: Input[D], 
-            op: Expr, 
-            name: String, 
-            partition: TimeWindow
-          )
+    final case class FeatureDef[D, Expr](
+      inp: Input[D], 
+      op: Expr, 
+      name: String, 
+      partition: Option[TimeWindow]
+    )
         </code></pre>
 
       </section>
@@ -262,12 +262,12 @@
       <section data-transition="fade-out">
         <h3>Example of a FeatureDef</h3>
         <pre><code class="hljs scala" style="font-size:28px;">
-          FeatureDef(
-            dir("input_table"),
-            sum(coalesce(account_balance, 0)) 
-            "account_balance"
-            0 ~ 14 days
-          )
+    FeatureDef(
+      dir("input_table"),
+      sum(coalesce(account_balance, 0)) 
+      "account_balance"
+      0 ~ 14 days
+    )
          </code></pre>
       </section>
 
@@ -605,6 +605,8 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
                 </code></pre>
       </section>
       <section data-transition="fade-out">
+        <h3>Once off</h3>
+
         <pre><code class="hljs scala" style="font-size:25px;" data-line-numbers="1000" data-trim>
           ...
             case JoinFeatures(f1, f2) =>
@@ -623,6 +625,8 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
       </section>
 
       <section data-transition="fade-out">
+        <h3>Once off</h3>
+
         <pre><code class="hljs scala" style="font-size:25px;" data-line-numbers="2-4" data-trim>
             ...
               case JoinFeatures(f1, f2) =>
@@ -641,6 +645,8 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
       </section>
 
       <section data-transition="fade-out">
+        <h3>Once off</h3>
+
         <pre><code class="hljs scala" style="font-size:25px;" data-line-numbers="5-8" data-trim>
               ...
                 case JoinFeatures(f1, f2) =>
@@ -660,6 +666,8 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
 
 
       <section data-transition="fade-out">
+        <h3>Once off</h3>
+
         <pre><code class="hljs scala" style="font-size:25px;" data-line-numbers="9" data-trim>
                 ...
                   case JoinFeatures(f1, f2) =>
@@ -678,6 +686,8 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
       </section>
 
       <section data-transition="fade-out">
+        <h3>Once off</h3>
+
         <pre><code class="hljs scala" style="font-size:25px;"  data-trim>
             case CreateFeatures(fd) =>
               ZIO.accessM(dataService =>
@@ -696,57 +706,57 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
       <section data-transition="fade-in">
         <h3>Define the set of features !</h3>
         <pre><code class="hljs scala" style="font-size:24px;"  data-noescape>
-                val features =   
-                  List(
-                    FeatureDef(
-                      const(table),
-                      'accountBalance.sum,
-                      "sum_account_balance",
-                      0 ~ 2 weeks
-                    ),
-                    FeatureDef(
-                      const(table),
-                      'accountBalance.max,
-                      "max_account_balance",
-                      0 ~ 2 weeks
-                    ),
-                    FeatureDef(
-                      const(table),
-                      'accountBalance.sum,
-                      "sum_account_balance",
-                      2 ~ 4 weeks
-                    ),
-                    FeatureDef(
-                      const(table),
-                      'accountBalance.max,
-                      "max_account_balance",
-                      2 ~ 4 weeks
-                    ),
-                    FeatureDef(
-                      const(table),
-                      'accountBalance.sum,
-                      "sum_account_balance",
-                      0 ~ 4 weeks
-                    ),
-                    FeatureDef(
-                      const(table),
-                      'accountBalance.max,
-                      "max_account_balance",
-                      0 ~ 4 weeks
-                    )
+                 val features =   
+                   List(
+                     FeatureDef(
+                       const(table),
+                       'accountBalance.sum,
+                       "sum_account_balance",
+                       0 ~ 2 weeks
+                     ),
+                     FeatureDef(
+                       const(table),
+                       'accountBalance.max,
+                       "max_account_balance",
+                       0 ~ 2 weeks
+                     ),
+                     FeatureDef(
+                       const(table),
+                       'accountBalance.sum,
+                       "sum_account_balance",
+                       2 ~ 4 weeks
+                     ),
+                     FeatureDef(
+                       const(table),
+                       'accountBalance.max,
+                       "max_account_balance",
+                       2 ~ 4 weeks
+                     ),
+                     FeatureDef(
+                       const(table),
+                       'accountBalance.sum,
+                       "sum_account_balance",
+                       0 ~ 4 weeks
+                     ),
+                     FeatureDef(
+                       const(table),
+                       'accountBalance.max,
+                       "max_account_balance",
+                       0 ~ 4 weeks
+                     )
             </code></pre>
       </section>
       <section data-transition="fade-in">
         <h3>Let' execute now ! </h3>
         <pre><code class="hljs scala" style="font-size:26px;">
 
-   val flinkService = new DataService[flink.Table, flink.Expression] { .. }
+  val flinkService = new DataService[flink.Table, flink.Expression] { .. }
 
-   val job: FeatureGen[Table, Expression] = 
-     FeatureGen.combineAll(features.map(start))      
+  val job: FeatureGen[Table, Expression] = 
+    FeatureGen.combineAll(features.map(start))      
   
-   // (we have) def run[D, Expr]: Impl[D, Expr, A] = ???
-   run(job).provide(flinkService)
+  // (we have) def run[D, Expr]: Impl[D, Expr, A] = ???
+  run(job).provide(flinkService)
 
             </code></pre>
       </section>
@@ -1267,6 +1277,8 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
       <section data-transition="fade-out">
         <h3> Are we done yet ? </h3>
         <h6 style="color:red">We could derive features from features</h6>
+        <p style="font-size:25px;color: black;"> Which is otherwise difficult with SQL and data-source languages</p>
+
       </section>
 
       <section data-transition="fade-out">
@@ -1285,6 +1297,7 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
          ): (FeatureRequests, FeatureGen[D, E]) = ???
             </code></pre>
       </section>
+
 
       <section data-transition="fade-in">
         <h3> Execution </h3>
@@ -1322,7 +1335,7 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
       </section>
 
 
-      <section>
+      <section data-transition="fade-out">
         <h3> Laws </h3>
         <p style="font-size:30px;color: black;"> Think in terms of abstractions, and let it propogate through to details
         </p>
@@ -1339,7 +1352,7 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
 
       </section>
 
-      <section>
+      <section data-transition="fade-out">
         <h3>What is Going on ? Logs ?</h3>
         <p style="font-size:30px;color: black;"> A safe AOP style logging </p>
         <pre><code class="hljs scala" style="font-size:20px;" data-trim data-noescape>
@@ -1365,7 +1378,7 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
       </section>
 
       <section data-transition="fade-in">
-        <h3> And that's how to do it </h3>
+        <h3> And that's how FP met Real World </h3>
         <p style="font-size:30px;color: black;"> Purely functional </p>
         <p style="font-size:30px;color: black;"> Scalable, declarative</p>
         <p style="font-size:30px;color: black;">No time spent on boilerplate</p>
