@@ -1340,8 +1340,6 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
         <p style="font-size:30px;color: black;"> Think in terms of abstractions, and let it propogate through to details
         </p>
         <pre><code class="hljs scala" style="font-size:25px;" data-trim data-noescape>
-          // Assuming project is a new node, give List[Expr], returns FeatureRes => FeatureRes
-
           val law = 
             join(project(d1, feat1), project(d2, feat2) === 
               project(join(d1, d2), feat1 ++ feat2)
