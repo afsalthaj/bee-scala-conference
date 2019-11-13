@@ -1219,7 +1219,7 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
                                 case (Right(v1), Right(v2)) => impl(join(pure(v1), pure(v2)))
                                 case (Left(_)  , Right(v2)) => impl(pure(v2))
                                 case (Right(v1), Left(_))   => impl(pure(v1))
-                                case (Left(_)  , Left(_))   => impl(fail("Can that really happen?"))
+                                case (Left(_)  , Left(_))   => impl(fail("Nothing to Join, Failed"))
                               })
               </code></pre>
 
