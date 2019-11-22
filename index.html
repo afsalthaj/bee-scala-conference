@@ -841,15 +841,15 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
       <section data-transition="fade-out">
         <h3> It seems we can <span style="color:red">introspect ! </span> </h3>
         <pre><code class="hljs scala" style="font-size:30px;" data-trim data-noescape>
-            final case class Join[D, E, A](feat1, feat2) 
-              extends FeatureGen[D, E, A]      
+            final case class Join[D, E, A, B](feat1, feat2) 
+              extends FeatureGen[D, E, (A, B)]      
           </code></pre>
       </section>
       <section data-transition="fade-out">
         <h3> It seems we can <span style="color:red">introspect ! </span> </h3>
         <pre><code class="hljs scala" style="font-size:30px;" data-trim data-noescape>
-            final case class Join[D, E, A](feat1 & feat2, <strike style='color:maroon'>feat2</strike>) 
-              extends FeatureGen[D, E, A]      
+            final case class Join[D, E, A, B](feat1 & feat2, <strike style='color:maroon'>feat2</strike>) 
+              extends FeatureGen[D, E, (A, B)]      
           </code></pre>
       </section>
 
