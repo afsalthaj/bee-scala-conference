@@ -608,7 +608,6 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
                 case Pure(value)      => ZIO.succeed(value)
                 case Zip(pgm1, pgm2)  => apply(pgm1).zip(apply(pgm2))
                 case Map(pgm, f)      => apply(pgm).map(f)
-                case Fail(message)    => ZIO.fail(message)
                 ... // In next slides
               }
 
@@ -805,7 +804,7 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
                       case (Some(a), Some(b)) => a.join(b)
                       case (Some(a), None)    => a
                       case (None, Some(a))    => a
-                      case (None, None)       => fail("Empty list")
+                      case (None, None)       => fail("Undefined state (empty list?)")
                     }
                   })
             
