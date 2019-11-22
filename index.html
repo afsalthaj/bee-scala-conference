@@ -160,7 +160,7 @@
           select
             customer_id,
             sum(coalesce(credit, 0)) 
-            as "sun_credit_0_14d"
+            as "sum_credit_0_14d"
           from 
             input_table
           group by customer_id
@@ -178,7 +178,7 @@
           select
             customer_id,
             sum(coalesce(credit, 0)) 
-            as "sun_credit_0_14d"
+            as "sum_credit_0_14d"
           from 
             input_table
           group by customer_id
