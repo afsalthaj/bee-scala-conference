@@ -149,7 +149,7 @@
       <!--Slide -->
       <section data-transition="fade-in">
         <h3>A simple feature definition</h3>
-        <h6> Find out sum of account balance of each customer in last 14 days</h6>
+        <h6> Find out sum of credits for each customer in their account in last 14 days</h6>
       </section>
 
       <!-- Slide 18 -->
@@ -159,8 +159,8 @@
         <pre><code class="hljs sql" style="font-size:22px;" data-trim data-trim data-line-numbers="1-10">
           select
             customer_id,
-            sum(coalesce(account_balance, 0)) 
-            as "account_balance_0_14d"
+            sum(coalesce(credit, 0)) 
+            as "sun_credit_0_14d"
           from 
             input_table
           group by customer_id
@@ -177,8 +177,8 @@
         <pre><code class="hljs sql" style="font-size:22px;" data-trim data-line-numbers="3,4,6,10">
           select
             customer_id,
-            sum(coalesce(account_balance, 0)) 
-            as "account_balance_0_14d"
+            sum(coalesce(credit, 0)) 
+            as "sun_credit_0_14d"
           from 
             input_table
           group by customer_id
@@ -195,8 +195,8 @@
         <pre><code class="hljs scala" style="font-size:25px;" data-trim data-line-numbers="1-10">
           ...
 
-          sum(coalesce(account_balance, 0)) 
-          as "account_balance_0_14d"
+          sum(coalesce(credit, 0)) 
+          as "sum_credit_0_14d"
           from input_table of 0-14 days
 
           ...
@@ -211,8 +211,8 @@
         <pre><code class="hljs scala"  style="font-size:25px;" data-trim data-line-numbers="4">
                   ...
         
-                  sum(coalesce(account_balance, 0)) 
-                  as "account_balance_0_14d"
+                  sum(coalesce(credit, 0)) 
+                  as "sum_credit_0_14d"
                   from input_table of 0-14 days
         
                   ...
@@ -226,8 +226,8 @@
         <pre><code class="hljs scala" style="font-size:25px;" data-trim data-line-numbers="4">
                         ...
               
-                        sum(coalesce(account_balance, 0)) 
-                        as "account_balance"
+                        sum(coalesce(credit, 0)) 
+                        as "sum_credit"
                         from input_table of 0-14 days
               
                         ...
@@ -275,8 +275,8 @@
         <pre><code class="hljs scala" style="font-size:28px;">
     FeatureDef(
       dir("input_table"),
-      sum(coalesce(account_balance, 0)) 
-      "account_balance"
+      sum(coalesce(credit, 0)) 
+      "sum_credit"
       0 ~ 14 days
     )
          </code></pre>
@@ -289,8 +289,8 @@
             FeatureDef(
               dir("input_table").join(dir("another_table"))
                 .orElse(const("myTestData")),
-              sum(coalesce(account_balance, 0)),
-              "account_balance"
+              sum(coalesce(credit, 0)),
+              "sum_credit"
               0 ~ 14 days
             )
            </code></pre>
@@ -722,38 +722,38 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
                    List(
                      FeatureDef(
                        const(table),
-                       'accountBalance.sum,
-                       "sum_account_balance",
+                       'credit.sum,
+                       "sum_credit",
                        0 ~ 2 weeks
                      ),
                      FeatureDef(
                        const(table),
-                       'accountBalance.max,
-                       "max_account_balance",
+                       'credit.max,
+                       "max_credit",
                        0 ~ 2 weeks
                      ),
                      FeatureDef(
                        const(table),
-                       'accountBalance.sum,
-                       "sum_account_balance",
+                       'credit.sum,
+                       "sum_credit",
                        2 ~ 4 weeks
                      ),
                      FeatureDef(
                        const(table),
-                       'accountBalance.max,
-                       "max_account_balance",
+                       'credit.max,
+                       "max_credit",
                        2 ~ 4 weeks
                      ),
                      FeatureDef(
                        const(table),
-                       'accountBalance.sum,
-                       "sum_account_balance",
+                       'credit.sum,
+                       "sum_credit",
                        0 ~ 4 weeks
                      ),
                      FeatureDef(
                        const(table),
-                       'accountBalance.max,
-                       "max_account_balance",
+                       'credit.max,
+                       "max_credit",
                        0 ~ 4 weeks
                      )
             </code></pre>
