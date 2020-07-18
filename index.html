@@ -32,7 +32,7 @@
       <!-- Heading section -->
       <section data-markdown>
         <textarea data-template>
-            ## FP meets Feature Engineering
+            ## A simplified FP in scala for BigData
 	      </textarea>
       </section>
 
@@ -47,19 +47,14 @@
         <p style="font-size:30px" align="left">https://simplemachines.com.au</p>
       </section>
 
-      <section>
-        <h3 align="left">Thanks to ZIO-Config</h3>
-      </section>
-
       <!-- Slide 2 -->
       <section data-transition="fade-in">
         <h3>Why FP in Scala made difficult?</h3>
         <ul style="font-size:35px">
           <li>Get hit with a ton of jargon </li>
-          <li>Implicits</li>
           <li>Type inference</li>
           <li>Typeclass specialisations</li>
-          <li>Free structures with boilerplate</li>
+          <li>Boilerplate on Free structures</li>
           <li>Many options of solutions</li>
         </ul>
         <p style="font-size:35px">Result is,
@@ -543,7 +538,6 @@
       <section data-transition="fade-in" data-background="images/ZIO.png" data-state="dimbg">
         <h3>Going forward, We are using ZIO</h3>
         <ul>
-          <li>No implicit requirements</li>
           <li>Relatively easy concurrency operations</li>
           <li>Expressive types with error channels</li>
           <li>Great type inference</li>
@@ -551,7 +545,7 @@
       </section>
 
       <!-- Slide 6 -->
-      <section data-transition="fade-in" data-background="images/ZIO.png" data-state="dimbg">
+      <section data-transition="fade-in" data-state="dimbg">
         <h3> The mental model of ZIO </h3>
         <div>
           <pre><code class="hljs scala" style="font-size:30px; align-items: center;" data-trim>
@@ -1426,9 +1420,6 @@ def run[D, Expr, A]: Impl[D, Expr, A] = ???
         <p style="font-size:30px;color: black;"> Introspectable </p>
         <p style="font-size:30px;color: black;"> Declarative</p>
         <p style="font-size:30px;color: black;">With no time spent on boilerplate</p>
-        <p style="font-size:30px;color: black;"> No implicits</p>
-        <p style="font-size:30px;color: black;"> No macros</p>
-        <p style="font-size:30px;color: black;"> Relatively small piece of code - altogether.
         </p>
 
 
